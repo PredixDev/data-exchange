@@ -240,7 +240,7 @@ public class AssetFieldDataIT
 			String valueStr = ((DAString) data.getDataEvent()).getValue();
 			log.info("value = " + valueStr);	
 			
-			Assert.assertEquals("20.55", valueStr);
+			Assert.assertEquals("20.77", valueStr);
         }
         finally
         {
