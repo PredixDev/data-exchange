@@ -5,6 +5,7 @@ import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,8 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration
 @Profile("dxwebsocket")
 public class FdhWebSocketServerConfig extends ServerEndpointConfig.Configurator implements ApplicationContextAware{
+	@Value("${predix.dataexchange.default.fieldsource}")
+    private String                 defaultFieldSource;
 	
 	/* (non-Javadoc)
 	 * @see javax.websocket.server.ServerEndpointConfig.Configurator#modifyHandshake(javax.websocket.server.ServerEndpointConfig, javax.websocket.server.HandshakeRequest, javax.websocket.HandshakeResponse)
@@ -52,4 +55,12 @@ public class FdhWebSocketServerConfig extends ServerEndpointConfig.Configurator 
     public ServerEndpointExporter serverEndpointExporter() {        
           return new ServerEndpointExporter();        
     }
+
+	public String getDefaultFieldSource() {
+		return defaultFieldSource;
+	}
+
+	public void setDefaultFieldSource(String defaultFieldSource) {
+		this.defaultFieldSource = defaultFieldSource;
+	}
 }

@@ -15,6 +15,7 @@ import com.ge.predix.entity.field.fieldidentifier.FieldIdentifier;
 import com.ge.predix.entity.field.fieldidentifier.FieldSourceEnum;
 import com.ge.predix.entity.fielddata.FieldData;
 import com.ge.predix.entity.fielddata.OsaData;
+import com.ge.predix.entity.fielddata.PredixString;
 import com.ge.predix.entity.fielddatacriteria.FieldDataCriteria;
 import com.ge.predix.entity.fieldidentifiervalue.FieldIdentifierValue;
 import com.ge.predix.entity.fieldselection.FieldSelection;
@@ -28,6 +29,7 @@ import com.ge.predix.entity.timeseries.datapoints.ingestionrequest.DatapointsIng
 import com.ge.predix.entity.timeseries.datapoints.queryrequest.DatapointsQuery;
 import com.ge.predix.entity.timeseries.datapoints.queryrequest.Tag;
 import com.ge.predix.entity.timeseriesfilter.TimeseriesFilter;
+import com.ge.predix.solsvc.ext.util.JsonMapper;
 
 /**
  * 
@@ -429,5 +431,38 @@ public class TestData {
 
         getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
         return getFieldDataRequest;
+    }
+    /**
+     * @param assetId -
+     * @param nodeName -
+     * @param lowerThreshold - 
+     * @param upperThreshold -
+     * @return -
+     */
+    public static PutFieldDataRequest putFieldDataRequestEventHub(String assetId, String nodeName, double lowerThreshold, double upperThreshold,JsonMapper jsonMapper)
+    {
+        DatapointsIngestion datapointsIngestion = createTimeseriesDataBody(assetId, nodeName, lowerThreshold, upperThreshold);
+        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
+        PutFieldDataCriteria criteria = new PutFieldDataCriteria();
+        FieldData fieldData = new FieldData();
+        Field field = new Field();
+        FieldIdentifier fieldIdentifier = new FieldIdentifier();
+
+        fieldIdentifier.setSource("handler/eventHubPutFieldDataHandler");
+        field.setFieldIdentifier(fieldIdentifier);
+        List<Field> fields = new ArrayList<Field>();
+        fields.add(field);
+        fieldData.setField(fields);
+
+        PredixString data = new PredixString();
+        data.setString(jsonMapper.toJson(datapointsIngestion));
+        fieldData.setData(data);
+        criteria.setFieldData(fieldData);
+        List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
+        list.add(criteria);
+        putFieldDataRequest.setPutFieldDataCriteria(list);
+
+        
+        return putFieldDataRequest;
     }
 }

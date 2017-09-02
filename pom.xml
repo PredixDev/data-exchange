@@ -5,7 +5,7 @@
 
 	<groupId>com.ge.predix.solsvc</groupId>
 	<artifactId>data-exchange</artifactId>
-	<version>2.0.29</version>
+	<version>2.0.31</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,13 +16,15 @@
 	</parent>
 
 	<properties>
-		<ext-model.version>2.3.1</ext-model.version>
-		<ext-util.version>2.3.1</ext-util.version>
-		<fdh-bootstrap-client.version>2.0.22</fdh-bootstrap-client.version>
-		<fdh-asset-handler.version>2.0.22</fdh-asset-handler.version>
-		<fdh-timeseries-handler.version>2.0.22</fdh-timeseries-handler.version>
-		<fdh-websocket-handler.version>2.0.22</fdh-websocket-handler.version>
-		<fdh-custom-handler.version>2.0.22</fdh-custom-handler.version>
+		<ext-model.version>2.3.2</ext-model.version>
+		<ext-util.version>2.3.2</ext-util.version>
+		<fdh-bootstrap-client.version>2.0.23</fdh-bootstrap-client.version>
+		<fdh-asset-handler.version>2.0.23</fdh-asset-handler.version>
+		<fdh-rabbitmq-handler.version>2.0.23</fdh-rabbitmq-handler.version>
+		<fdh-timeseries-handler.version>2.0.23</fdh-timeseries-handler.version>
+		<fdh-eventhub-handler.version>2.0.22</fdh-eventhub-handler.version>
+		<fdh-websocket-handler.version>2.0.23</fdh-websocket-handler.version>
+		<fdh-custom-handler.version>2.0.23</fdh-custom-handler.version>
 
 		<jettison.version>1.1</jettison.version>
 		<cxf.version>3.1.7</cxf.version>
@@ -48,7 +50,11 @@
 
 
 	<dependencies>
-
+		<dependency>
+		    <groupId>io.netty</groupId>
+		    <artifactId>netty-tcnative-boringssl-static</artifactId>
+		    <version>1.1.33.Fork23</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-extension-providers</artifactId>
@@ -58,6 +64,12 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>${httpclient.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.springframework.amqp</groupId>
+    		<artifactId>spring-rabbit-junit</artifactId>
+    		<version>1.7.3.RELEASE</version>
+    		<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -117,6 +129,11 @@
 			<artifactId>fdh-timeseries-handler</artifactId>
 			<version>${fdh-timeseries-handler.version}</version>
 		</dependency>
+		<!--<dependency>
+			<groupId>com.ge.predix.solsvc</groupId>
+			<artifactId>fdh-eventhub-handler</artifactId>
+			<version>${fdh-eventhub-handler.version}</version>
+		</dependency>-->
 		<dependency>
 			<groupId>com.ge.predix.solsvc</groupId>
 			<artifactId>fdh-asset-handler</artifactId>
@@ -131,6 +148,11 @@
 			<groupId>com.ge.predix.solsvc</groupId>
 			<artifactId>fdh-custom-handler</artifactId>
 			<version>${fdh-custom-handler.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ge.predix.solsvc</groupId>
+			<artifactId>fdh-rabbitmq-handler</artifactId>
+			<version>${fdh-rabbitmq-handler.version}</version>
 		</dependency>
 
 
@@ -311,7 +333,7 @@
 						</executions>
 						<configuration>
 							<systemProperties>
-								<!-- <property> <name>server</name> <value>localhost</value> </property> 
+								<!-- <property> <name>server</name> <value>localhost</value> </property>
 									<property> <name>port</name> <value>5672</value> </property> -->
 							</systemProperties>
 							<includes>

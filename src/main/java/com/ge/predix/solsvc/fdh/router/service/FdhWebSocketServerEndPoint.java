@@ -29,7 +29,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import com.ge.predix.entity.field.Field;
 import com.ge.predix.entity.field.fieldidentifier.FieldIdentifier;
-import com.ge.predix.entity.field.fieldidentifier.FieldSourceEnum;
 import com.ge.predix.entity.fielddata.FieldData;
 import com.ge.predix.entity.fielddata.PredixString;
 import com.ge.predix.entity.putfielddata.PutFieldDataCriteria;
@@ -61,6 +60,8 @@ public class FdhWebSocketServerEndPoint{
 	@Autowired
 	private JsonMapper mapper;
 	
+	@Autowired
+	private FdhWebSocketServerConfig config;
 	
 	private String nodeId;
 	
@@ -94,6 +95,7 @@ public class FdhWebSocketServerEndPoint{
 	    log.info("RequestParameterMap : "+session.getUserProperties()); //$NON-NLS-1$
 		this.context = (ApplicationContext) session.getUserProperties().get("applicationContext");
 		this.putFieldDataService = this.context.getBean(PutRouter.class);	
+		this.config = this.context.getBean(FdhWebSocketServerConfig.class);
 		this.mapper = this.context.getBean(JsonMapper.class);
 		this.mapper.init();
 		
@@ -107,11 +109,14 @@ public class FdhWebSocketServerEndPoint{
 					putFieldDataRequest.setCorrelationId(UUID.randomUUID().toString());
 					PutFieldDataCriteria criteria = new PutFieldDataCriteria();
 					FieldData fieldData = new FieldData();
-					Field field = new Field();
-					FieldIdentifier  fieldIdentifier = new FieldIdentifier();
-					fieldIdentifier.setSource(FieldSourceEnum.PREDIX_TIMESERIES.name());
-					field.setFieldIdentifier(fieldIdentifier);
-					fieldData.getField().add(field);
+					String[] fieldSources = this.config.getDefaultFieldSource().split(","); 
+					for (String source:fieldSources) {
+						Field field = new Field();
+						FieldIdentifier  fieldIdentifier = new FieldIdentifier();
+						fieldIdentifier.setSource(source);
+						field.setFieldIdentifier(fieldIdentifier);
+						fieldData.getField().add(field);
+					}
 					PredixString predixString = new PredixString();
 					predixString.setString(message);
 					fieldData.setData(predixString);
