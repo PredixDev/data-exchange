@@ -1,4 +1,4 @@
-package com.ge.predix.solsvc.fdh.router.service;
+package com.ge.predix.solsvc.fdh.router.config;
 
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
@@ -19,8 +19,8 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
  */
 @Configuration
 @Profile("dxwebsocket")
-public class FdhWebSocketServerConfig extends ServerEndpointConfig.Configurator implements ApplicationContextAware{
-	@Value("${predix.dataexchange.default.fieldsource}")
+public class DXWebSocketServerConfig extends ServerEndpointConfig.Configurator implements ApplicationContextAware{
+	@Value("${predix.dataexchange.default.fieldsource:PREDIX_EVENT_HUB}")
     private String                 defaultFieldSource;
 	
 	/* (non-Javadoc)
@@ -29,7 +29,7 @@ public class FdhWebSocketServerConfig extends ServerEndpointConfig.Configurator 
 	@Override
 	public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
 		sec.getUserProperties().put("headers", request.getHeaders()); //$NON-NLS-1$
-		sec.getUserProperties().put("applicationContext", FdhWebSocketServerConfig.context); //$NON-NLS-1$
+		sec.getUserProperties().put("applicationContext", DXWebSocketServerConfig.context); //$NON-NLS-1$
 		super.modifyHandshake(sec, request, response);
 	}
 	

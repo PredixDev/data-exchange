@@ -1,5 +1,8 @@
 package com.ge.predix.solsvc.fdh.router;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,18 +18,22 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,10 +43,14 @@ import com.ge.predix.entity.asset.Asset;
 import com.ge.predix.entity.field.fieldidentifier.FieldSourceEnum;
 import com.ge.predix.entity.model.Model;
 import com.ge.predix.entity.util.map.Map;
+import com.ge.predix.solsvc.bootstrap.ams.common.IAssetConfig;
 import com.ge.predix.solsvc.bootstrap.ams.dto.Attribute;
-import com.ge.predix.solsvc.bootstrap.ams.factories.AssetFactory;
+import com.ge.predix.solsvc.bootstrap.ams.factories.AssetClientImpl;
+import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.asset.AssetPutDataHandlerImpl;
 import com.ge.predix.solsvc.fdh.handler.timeseries.TimeseriesPutDataHandler;
+import com.ge.predix.solsvc.restclient.config.IOauthRestConfig;
+import com.ge.predix.solsvc.restclient.impl.RestClient;
 
 /**
  * @author tturner
@@ -60,7 +71,25 @@ public class AssetPutFieldDataTest extends BaseTest
 
     
     @Autowired
-    private AssetFactory assetFactory;
+    @Qualifier("AssetClient")
+    private AssetClientImpl assetClient;
+    
+    @Autowired
+	private IAssetConfig assetRestConfig;
+    
+//    @Autowired
+//	private RestClient restClient;
+    
+    private CloseableHttpResponse response;
+    
+
+    @Autowired
+    @Qualifier("defaultOauthRestConfig")
+    private IOauthRestConfig    restConfig;
+    
+   
+    
+   
     /**
      * @throws Exception -
      */
@@ -69,6 +98,11 @@ public class AssetPutFieldDataTest extends BaseTest
             throws Exception
     {
         //
+    	// make sure the correct RestClient is wired to serviceBase
+    			// It gets changed by mock testing PredixAssetClient
+    			MockitoAnnotations.initMocks(this);
+    			//this.assetClient.setRestClient(this.restClient);
+    			this.response = Mockito.mock(CloseableHttpResponse.class);      
     }
 
     /**
@@ -106,13 +140,40 @@ public class AssetPutFieldDataTest extends BaseTest
         List<Asset> assets = new ArrayList<Asset>();
         Asset asset = new Asset();
         asset.setAssetId("12345");
+        asset.setUri("/asset/getrb_2");
         asset.setAttributes(new Map());
         Attribute attribute = new Attribute(); 
         attribute.getValue().add("value");
         asset.getAttributes().put(attributeName,attribute );
-        assets.add(asset );
+        assets.add(asset );       
+  	
         
-        Mockito.when(this.assetFactory.getAssetsByFilter(Matchers.any(), Matchers.anyListOf(Header.class))).thenReturn(assets);
+//        Mockito.when(this.response.getStatusLine()).thenReturn(
+//				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
+//						HttpStatus.SC_OK, "test reason!"));
+//
+//		HttpEntity entity = Mockito.mock(HttpEntity.class);
+//		this.response.setEntity(entity);
+//		Mockito.when(
+//				this.restClient.get(Matchers.anyString(),
+//						Matchers.anyListOf(Header.class),Matchers.anyInt(), Matchers.anyInt())).thenReturn(
+//				this.response);
+//		String body = "[{\"uri\":\"/asset/getrb_2\",\"assetId\":12345}]";
+//				
+//		InputStream stream = new ByteArrayInputStream(body.getBytes());
+//		
+//		Mockito.when(entity.getContent()).thenReturn(stream);
+//		Mockito.when(entity.getContentLength()).thenReturn(
+//				new Long(body.length()));
+//		Mockito.when(this.response.getEntity()).thenReturn(entity);
+		
+		List<Header> headers = new ArrayList<Header>();
+		Header header = new BasicHeader("Content-Type", "application/json");
+		headers.add(header);
+		
+		//log.debug("headers is: " + headers);
+		
+		Mockito.when(this.assetClient.create(assets, headers)).thenReturn(response);
         Mockito.when(this.restClient.hasToken(Matchers.anyListOf(Header.class)))
         .thenReturn(true);
         Mockito.when(this.restClient.hasZoneId(Matchers.anyListOf(Header.class)))

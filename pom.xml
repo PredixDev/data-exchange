@@ -5,7 +5,7 @@
 
 	<groupId>com.ge.predix.solsvc</groupId>
 	<artifactId>data-exchange</artifactId>
-	<version>2.0.43</version>
+	<version>2.0.45</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,15 +16,15 @@
 	</parent>
 
 	<properties>
-		<ext-model.version>2.3.5</ext-model.version>
-		<ext-util.version>2.3.5</ext-util.version>
-		<fdh-bootstrap-client.version>2.0.32</fdh-bootstrap-client.version>
-		<fdh-asset-handler.version>2.0.32</fdh-asset-handler.version>
-		<fdh-rabbitmq-handler.version>2.0.32</fdh-rabbitmq-handler.version>
-		<fdh-timeseries-handler.version>2.0.32</fdh-timeseries-handler.version>
-		<fdh-eventhub-handler.version>2.0.22-SNAPSHOT</fdh-eventhub-handler.version>
-		<fdh-websocket-handler.version>2.0.32</fdh-websocket-handler.version>
-		<fdh-custom-handler.version>2.0.32</fdh-custom-handler.version>
+		<ext-model.version>2.3.7</ext-model.version>
+		<ext-util.version>2.3.7</ext-util.version>
+		<fdh-bootstrap-client.version>2.0.33</fdh-bootstrap-client.version>
+		<fdh-asset-handler.version>2.0.33</fdh-asset-handler.version>
+		<fdh-rabbitmq-handler.version>2.0.33</fdh-rabbitmq-handler.version>
+		<fdh-timeseries-handler.version>2.0.33</fdh-timeseries-handler.version>
+		<fdh-eventhub-handler.version>2.0.33</fdh-eventhub-handler.version>
+		<fdh-websocket-handler.version>2.0.33</fdh-websocket-handler.version>
+		<fdh-custom-handler.version>2.0.33</fdh-custom-handler.version>
 
 		<jettison.version>1.1</jettison.version>
 		<cxf.version>3.1.7</cxf.version>

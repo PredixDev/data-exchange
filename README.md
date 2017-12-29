@@ -17,16 +17,19 @@ Data Exchange<br>
 <a href="http://predixdev.github.io/fdh-router-service" target="_blank">
 	<img height="50px" width="100px" src="images/pages.jpg" alt="view github pages">
 </a>
+
 Data Exchange Federated Data Handler
 ==================
 
 Data Exchange is a Federated Data Handler that routes Get/Put requests to a DataHandler. Data Exchange is used to retrieve or store any Data Field from any Datasource with any Filter where clause.  
 
-PredixAssetHandler, PredixTimeseriesHandler, WebsocketHandler, and RabbitMqHandler are currently supported.  You can add Handlers to other datasources as needed.  The intent here is to create consistency across your apis in the cloud and on the edge allowing for data and algorithm portability.
+PredixAssetHandler, PredixTimeseriesHandler, PredixEventHubHandler, PredixBlobstoreHandler, WebsocketHandler, RabbitMqHandler and CustomHandler are currently supported.  You can add Handlers to other datasources as needed.  The intent here is to create consistency across your apis in the cloud and on the edge allowing for data and algorithm portability.
 
 <img src="images/fdh_handlers.png">
 
 Any service, such as [rmd-analytics](https://github.com/predixdev/rmd-analytics) or [Ingestion](https://github.com/predixdev/dataingestion-service) can leverage the Data Exchange to pass runtime requests to get or put data.  The api, architecture and implementation are portable beyond cloud microservices.  The api provides data resolution for any field from any datasource (customer specific datasources, files, hadoop, rdbms, cache, Asset, Timeseries, etc)
+
+For example, the Digital Twin Analytics Reference App saves Asset records using the AssetHandler and puts a message on a queue using the RabbitMQHandler, all with one HTTP Request.  (The Queue message triggers Predix Analytics orchestrations to run).
 
 Runtime resolution of Fields allows for saved Queries applied to Event data.  Once a Handler is written, you won't have to return to it.  This frees up the team to build more value-add services and not worry about the Data Retrieval and Storage.  Also you can swap out Data Sources quite easily by adding a different Handler.
 
@@ -34,6 +37,7 @@ Runtime resolution of Fields allows for saved Queries applied to Event data.  On
 
 - I need to get data from multiple data sources with a single call
 - I need to put data results to multiple data sources with a single call
+- I need to support handling GetFieldData and PutFieldData requests over different protocols (HTTP, gRPC (via event-hub), inline Java). 
 - I need to save requests for runtime data binding acting on different Asset Ids
 - I need to request data in Units of Measure (celcius vs. fahrenheit e.g.) than the data is stored in
 - I need to request data in different formats, specifically common formats, than the data is stored in

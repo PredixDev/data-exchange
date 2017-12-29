@@ -1,0 +1,283 @@
+package com.ge.predix.solsvc.fdh.router.service.router;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.http.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import com.ge.predix.entity.field.Field;
+import com.ge.predix.entity.field.fieldidentifier.FieldIdentifier;
+import com.ge.predix.entity.fielddata.FieldData;
+import com.ge.predix.entity.fielddatacriteria.FieldDataCriteria;
+import com.ge.predix.entity.getfielddata.GetFieldDataRequest;
+import com.ge.predix.entity.getfielddata.GetFieldDataResult;
+import com.ge.predix.entity.putfielddata.PutFieldDataCriteria;
+import com.ge.predix.entity.putfielddata.PutFieldDataRequest;
+import com.ge.predix.entity.timeseriesfilter.AssetCriteriaAwareTimeseriesFilter;
+import com.ge.predix.entity.timeseriesfilter.TimeseriesFilter;
+import com.ge.predix.entity.util.map.DataMap;
+import com.ge.predix.eventhub.EventHubClientException;
+import com.ge.predix.eventhub.Message;
+import com.ge.predix.eventhub.client.Client;
+import com.ge.predix.eventhub.configuration.EventHubConfiguration;
+import com.ge.predix.eventhub.configuration.SubscribeConfiguration;
+import com.ge.predix.solsvc.ext.util.JsonMapper;
+import com.ge.predix.solsvc.fdh.handler.GetDataHandler;
+import com.ge.predix.solsvc.fdh.router.config.DXEventHubConfiguration;
+
+/**
+ * Time series Handler - This handler supports 2 Filters. A pure
+ * TimeseriesFilter and a AssetCriteriaAwareTimeseriesFilter.
+ * 
+ * TimeseriesFilter - simply takes the Time series requests and forwards it on
+ * to Time series SDK AssetCriteriaAwareTimeseriesFilter -invokes Asset service
+ * to get attributes and then replaces the values where it find {{replaceMe}}
+ * mustache templates
+ * 
+ * After it receives the time series data it adapts it to the expectedDataType
+ * in the expectedEngineeringUnits
+ * 
+ * @author predix
+ */
+@Component
+@SuppressWarnings("nls")
+@ImportResource({ "classpath*:META-INF/spring/predix-websocket-client-scan-context.xml",
+		"classpath*:META-INF/spring/fdh-adapter-scan-context" })
+@Profile("eventhub")
+public class DXEventHubSubscriber implements GetDataHandler {
+	private static final Logger log = LoggerFactory.getLogger(DXEventHubSubscriber.class.getName());
+
+	static Client synchClient;
+
+	public static final long DEFAULT_TIMEOUT = 60000L;
+
+	long SUBSCRIBER_ACTIVE_WAIT_LENGTH = 10000L;
+	
+	@Autowired
+	private PutRouter putFieldDataService;
+
+	@Autowired
+	private GetRouter getFieldDataService;
+	
+	@Autowired
+	private DXEventHubConfiguration eventHubConfig;
+
+	@Autowired
+	private JsonMapper mapper;
+	
+	@PostConstruct
+	public void init() {
+		try {
+			createClient();
+			SubscribeCallback callback = new SubscribeCallback();
+			synchClient.subscribe(callback);
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					pause(SUBSCRIBER_ACTIVE_WAIT_LENGTH);
+					List<Message> messages = callback.getMessage();
+					log.info("no of messages : "+callback.getMessageCount());
+					for (Message message:messages) {
+						String msg = message.getBody().toStringUtf8();
+						PutFieldDataRequest request = mapper.fromJson(msg, PutFieldDataRequest.class);
+						if (request != null) {
+							putFieldDataService.putData(request, null, null);
+						}else {
+							GetFieldDataRequest getRequest = mapper.fromJson(msg, GetFieldDataRequest.class);
+							if (getRequest != null) {
+								GetFieldDataResult result = getFieldDataService.getData(getRequest, null, null);
+								//Create PutField Request to Send back the request.
+								PutFieldDataRequest sendResponseRequest = new PutFieldDataRequest();
+								
+							}
+						}
+						
+					}
+				}
+			});
+			t.start();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public GetFieldDataResult getData(GetFieldDataRequest request, Map<Integer, Object> modelLookupMap,
+			List<Header> headers) {
+		FieldDataCriteria currentCriteria = null;
+		try {
+			// 1. Validate Request
+			validateRequest(request);
+
+			GetFieldDataResult result = new GetFieldDataResult();
+			for (FieldDataCriteria criteria : request.getFieldDataCriteria()) {
+				currentCriteria = criteria;
+
+			}
+
+			// 4. Send Response
+			return result;
+		} catch (Throwable t) {
+			String message = "error getting data for data event FieldDataCriteria=" + currentCriteria;
+			throw new RuntimeException(message, t);
+		}
+	}
+
+	private void validateRequest(GetFieldDataRequest request) {
+		List<FieldDataCriteria> criteriaList = request.getFieldDataCriteria();
+
+		if (criteriaList == null || criteriaList.size() == 0)
+			throw new UnsupportedOperationException("No FieldDataCriteria");
+
+		for (FieldDataCriteria criteria : criteriaList) {
+			if (criteria.getFilter() == null || (!(criteria.getFilter() instanceof TimeseriesFilter)
+					&& !(criteria.getFilter() instanceof AssetCriteriaAwareTimeseriesFilter))
+
+			) {
+				throw new UnsupportedOperationException("filter type=" + criteria.getFilter() + " not supported");
+			}
+		}
+	}
+
+	public void createClient() throws UnsupportedEncodingException {
+		// make the async and sync clients
+		try {
+			String[] client = eventHubConfig.getOauthClientId().split(":");
+			EventHubConfiguration eventHubConfiguration = null;
+			if ((eventHubConfig.getEventHubServiceName() != null && !"".equals(eventHubConfig.getEventHubServiceName())
+					|| (eventHubConfig.getEventHubUAAServiceName() != null
+							&& !"".equals(eventHubConfig.getEventHubUAAServiceName())))) {
+				eventHubConfiguration = new EventHubConfiguration.Builder()
+						.fromEnvironmentVariables(eventHubConfig.getEventHubServiceName(),
+								eventHubConfig.getEventHubUAAServiceName())
+						.clientID(client[0]).clientSecret(client[1])
+						.subscribeConfiguration(new SubscribeConfiguration.Builder().build()).automaticTokenRenew(true)
+						.build();
+			} else {
+				eventHubConfiguration = new EventHubConfiguration.Builder().host(eventHubConfig.getEventHubHostName())
+						.clientID(client[0]).clientSecret(client[1]).zoneID(eventHubConfig.getEventHubZoneId())
+						.authURL(eventHubConfig.getOauthIssuerId())
+						.subscribeConfiguration(new SubscribeConfiguration.Builder().build()).automaticTokenRenew(true)
+						.build();
+			}
+
+			synchClient = new Client(eventHubConfiguration);
+
+		} catch (EventHubClientException.InvalidConfigurationException e) {
+			log.error("*** Could not make client ***", e);
+			throw new RuntimeException("Could not make event hub client");
+		}
+	}
+
+	public static class SubscribeCallback implements Client.SubscribeCallback {
+		private List<Message> messages = Collections.synchronizedList(new ArrayList<Message>());
+		private AtomicInteger errorCount = new AtomicInteger();
+		private CountDownLatch finishLatch = new CountDownLatch(0);
+
+
+		public void block(int count) {
+			block(count, DEFAULT_TIMEOUT);
+		}
+
+		public void block(int count, long timeout) {
+			if (getMessageCount() >= count) {
+				return;
+			}
+			finishLatch = new CountDownLatch(count - getMessageCount());
+			System.out.println("block started with count of: " + finishLatch.getCount());
+
+			try {
+				finishLatch.await(timeout, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println("block finished with count of: " + finishLatch.getCount());
+		}
+
+		public void onMessage(Message message) {
+			// System.out.println(message.toString());
+			//if (message.getBody().toStringUtf8().equals(expectedMessage)) {
+				// System.out.println(System.currentTimeMillis() + "\n" +
+				// message.toString()+"\n");
+				// System.out.println(String.format("%s::message::%s::%s", name,
+				// message.getId(), message.getBody().toStringUtf8()));
+				messages.add(message);
+				if (finishLatch.getCount() != 0) {
+					this.finishLatch.countDown();
+				}
+			//}
+		}
+
+		public void onFailure(Throwable throwable) {
+			// System.out.println(name + "::error");
+			// System.out.println(throwable.getMessage());
+			errorCount.incrementAndGet();
+		}
+
+		public int getMessageCount() {
+			return messages.size();
+		}
+
+		public List<Message> getMessage() {
+			return messages;
+		}
+
+		public int getErrorCount() {
+			return errorCount.get();
+		}
+
+		public void resetCounts() {
+			messages.clear();
+			errorCount.set(0);
+		}
+	}
+
+	private void pause(Long timeout) {
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException e) {
+			System.out.println("~~~~~ TIMEOUT INTERRUPTED ~~~~~");
+		}
+	}
+	
+	private PutFieldDataRequest createPutFieldDataRequest(GetFieldDataResult result){
+        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
+        PutFieldDataCriteria criteria = new PutFieldDataCriteria();
+        FieldData fieldData = new FieldData();
+        Field field = new Field();
+        FieldIdentifier fieldIdentifier = new FieldIdentifier();
+
+        fieldIdentifier.setSource("handler/eventHubPutFieldDataHandler");
+        field.setFieldIdentifier(fieldIdentifier);
+        List<Field> fields = new ArrayList<Field>();
+        fields.add(field);
+        fieldData.setField(fields);
+
+        DataMap data = new DataMap();
+        
+        
+        fieldData.setData(data);
+        criteria.setFieldData(fieldData);
+        List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
+        list.add(criteria);
+        putFieldDataRequest.setPutFieldDataCriteria(list);
+        
+        return putFieldDataRequest;
+	}
+}

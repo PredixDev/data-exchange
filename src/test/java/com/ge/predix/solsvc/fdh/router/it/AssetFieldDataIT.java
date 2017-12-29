@@ -132,7 +132,7 @@ public class AssetFieldDataIT
      * @throws IOException -
      */
     @SuppressWarnings("nls")
-    @Test
+    //@Test
     public void testAPutFieldData()
             throws IOException
     {
@@ -166,7 +166,7 @@ public class AssetFieldDataIT
      * @throws IOException -
      */
     @SuppressWarnings("nls")
-    @Test
+    //@Test
     public void testCPutFieldDataWithFieldChangedEvent()
             throws IOException
     {
@@ -200,7 +200,7 @@ public class AssetFieldDataIT
      * @throws IOException -
      */
     @SuppressWarnings("nls")
-    @Test
+    //@Test
     public void testBGetFieldData()
             throws IOException
     {
@@ -255,12 +255,14 @@ public class AssetFieldDataIT
      * @throws IOException -
      */
     @SuppressWarnings("nls")
-    @Test
+    //@Test
     public void testDPutFieldDataAlertStatus()
             throws IOException
     {
-        PutFieldDataRequest request = TestData.putFieldDataRequestSetAlertStatus();
-
+    	String request = IOUtils.toString(getClass().getClassLoader()
+				.getResourceAsStream("PutFieldDataUpdateAlertStatus.json"));
+    	
+        log.debug("request=" + request);
         String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
 
         List<Header> headers = this.restClient.getSecureTokenForClientId();
@@ -268,7 +270,7 @@ public class AssetFieldDataIT
         CloseableHttpResponse response = null;
         try
         {
-            response = this.restClient.post(url, this.jsonMapper.toJson(request), headers,
+            response = this.restClient.post(url, request, headers,
                     this.restConfig.getDefaultConnectionTimeout(), this.restConfig.getDefaultSocketTimeout());
 
             Assert.assertNotNull(response);
@@ -286,6 +288,7 @@ public class AssetFieldDataIT
 
     }
 
+    
     /**
      * -
      * 
@@ -293,10 +296,51 @@ public class AssetFieldDataIT
      */
     @SuppressWarnings("nls")
     @Test
+    public void testFPutFieldDataCreateAsset()
+            throws IOException
+    {
+    	String request = IOUtils.toString(getClass().getClassLoader()
+				.getResourceAsStream("PutFieldDataCreateAssetUsingDataMap.json"));
+    	
+        log.debug("request=" + request);
+        String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
+
+        List<Header> headers = this.restClient.getSecureTokenForClientId();
+        headers.add(new BasicHeader("Content-Type", "application/json"));
+        CloseableHttpResponse response = null;
+        try
+        {
+            response = this.restClient.post(url, request, headers,
+                    this.restConfig.getDefaultConnectionTimeout(), this.restConfig.getDefaultSocketTimeout());
+
+            Assert.assertNotNull(response);
+            log.debug("response=" + response.toString());
+            Assert.assertTrue(response.toString().contains("HTTP/1.1 200 OK"));
+            String body = EntityUtils.toString(response.getEntity());
+            log.debug("body=" + body);
+            log.debug("herehere");
+            Assert.assertTrue(body.contains("errorEvent\":[]"));
+        }
+        finally
+        {
+            if ( response != null ) response.close();
+        }
+
+    }
+    /**
+     * -
+     * 
+     * @throws IOException -
+     */
+    @SuppressWarnings("nls")
+    //@Test
     public void testEPutMetaDataWithAssetDateFile()
             throws IOException
     {
-        PutFieldDataRequest request = TestData.putMetaDataWithAssetDataFileRequest();
+    	String body = IOUtils.toString(getClass().getClassLoader()
+				.getResourceAsStream("PutFieldDataCreateAssetUsingFile.json"));
+    	
+        PutFieldDataRequest request = this.jsonMapper.fromJson(body, PutFieldDataRequest.class);
 
         List<Header> headers = this.restClient.getSecureTokenForClientId();
         MultiValueMap<String, String> multiHeaders = new LinkedMultiValueMap<String, String>();
@@ -313,7 +357,7 @@ public class AssetFieldDataIT
 
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
         parts.add("file", new FileSystemResource(ASSET_TEST_FILE));
-        String body = this.jsonMapper.toJson(request);
+        
         log.info("payload to the upload " + body);
         parts.add("putfielddata", body);
 

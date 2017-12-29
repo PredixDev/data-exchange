@@ -7,12 +7,18 @@
     http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd 
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<mockito:mock id="assetFactory"
-		class="com.ge.predix.solsvc.bootstrap.ams.factories.AssetFactory" />
+	<!-- <mockito:mock id="assetFactory"
+		class="com.ge.predix.solsvc.bootstrap.ams.factories.AssetFactory" /> -->
+		
+	<!-- <mockito:mock id="modelFactory"
+		class="com.ge.predix.solsvc.bootstrap.ams.factories.ModelFactoryImpl" />	 -->
+		<mockito:mock id="assetClient"
+		class="com.ge.predix.solsvc.bootstrap.ams.factories.AssetClientImpl" />
+		
 	<mockito:mock id="classificationFactory"
 		class="com.ge.predix.solsvc.bootstrap.ams.factories.ClassificationFactory" />
-	<mockito:mock id="tagFactory"
-		class="com.ge.predix.solsvc.bootstrap.ams.factories.TagFactory" />
+	<!-- <mockito:mock id="tagFactory"
+		class="com.ge.predix.solsvc.bootstrap.ams.factories.TagFactory" /> -->
 	<mockito:mock id="timeseriesClient"
 		class="com.ge.predix.solsvc.timeseries.bootstrap.client.TimeseriesClient" />
 	<mockito:mock id="restClient"

@@ -3,7 +3,7 @@ applications:
     buildpack: java_buildpack
     memory: 512M
     timeout: 180
-    path: target/data-exchange-2.0.43.jar
+    path: target/data-exchange-2.0.45.jar
     instances : 1
     services:
         - {uaaService}
@@ -24,7 +24,7 @@ env:
     #UAA_INSTANCE_NAME: {uaaService}
     #CLIENT_ID : {clientId}
     #CLIENT_SECRET : {secret}
-    #PREDIX_DEFAULT_FIELDIDENTIFIER_SOURCE : PREDIX_EVENT_HUB
+    PREDIX_DEFAULT_FIELDIDENTIFIER_SOURCE : PREDIX_EVENT_HUB
     mainq: FieldChangedEventMainQueue
     errorq: FieldChangedEventErrorQueue
     livedata_websocket_uri : {LIVE_DATA_WS_URL}/livestream/messages

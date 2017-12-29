@@ -153,4 +153,37 @@ public class RabbitMQFieldDataIT
         }
 
     }
+    
+    /**
+     * @throws IOException -
+     */
+    @SuppressWarnings("nls")
+    @Test
+    public void testPutFieldDataWithhiloThresholdToQ()
+            throws IOException
+    {
+    	String request = IOUtils.toString(getClass().getClassLoader()
+				.getResourceAsStream("PutFieldDataUpdatehiLoThreshold-rmq.json"));
+    	
+        String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
+        
+        List<Header> headers = this.restClient.getSecureTokenForClientId();
+        headers.add(new BasicHeader("Content-Type", "application/json"));
+        CloseableHttpResponse response = null;
+        try
+        {
+            response = this.restClient.post(url, request, headers,
+                    this.restConfig.getDefaultConnectionTimeout(), this.restConfig.getDefaultSocketTimeout());
+
+            Assert.assertNotNull(response);
+            Assert.assertTrue(response.toString().contains("HTTP/1.1 200 OK"));
+            String body = EntityUtils.toString(response.getEntity());
+            //Assert.assertTrue(body.contains("errorEvent\":[]"));
+        }
+        finally
+        {
+            if ( response != null ) response.close();
+        }
+
+    }
 }

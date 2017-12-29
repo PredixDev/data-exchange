@@ -20,6 +20,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.web.context.support.StandardServletEnvironment;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 /**
  * AdhRouter routes traffic to ADH Handlers. Adh Handlers implement the exact
@@ -42,6 +43,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 		"classpath*:META-INF/spring/fdh-router-cxf-context.xml",
 		"classpath*:META-INF/spring/fdh-router-scan-context.xml" })
 @PropertySource("classpath:application-default.properties")
+@EnableWebSocket
 public class FdhRouterApplication extends PredixSpringBootInitializer {
 
 	private static final Logger log = LoggerFactory

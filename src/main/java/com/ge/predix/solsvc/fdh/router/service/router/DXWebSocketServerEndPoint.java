@@ -1,4 +1,4 @@
-package com.ge.predix.solsvc.fdh.router.service;
+package com.ge.predix.solsvc.fdh.router.service.router;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
@@ -37,20 +36,19 @@ import com.ge.predix.entity.timeseries.datapoints.ingestionrequest.DatapointsIng
 import com.ge.predix.entity.util.map.AttributeMap;
 import com.ge.predix.entity.util.map.Entry;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
-import com.ge.predix.solsvc.fdh.router.service.router.PutRouter;
+import com.ge.predix.solsvc.fdh.router.config.DXWebSocketServerConfig;
 
 /**
  * 
  * @author predix.adoption@ge.com -
  */
-@ServerEndpoint(value = "/livestream/{nodeId}",configurator=FdhWebSocketServerConfig.class)
+@ServerEndpoint(value = "/livestream/{nodeId}",configurator=DXWebSocketServerConfig.class)
 @Profile("dxwebsocket")
 @EnableWebSocket
-@Scope("prototype")
 @Component
-public class FdhWebSocketServerEndPoint{
+public class DXWebSocketServerEndPoint{
 	
-	private static Logger log = LoggerFactory.getLogger(FdhWebSocketServerEndPoint.class);
+	private static Logger log = LoggerFactory.getLogger(DXWebSocketServerEndPoint.class);
 
 	private static final LinkedList<Session> clients = new LinkedList<Session>();
 	
@@ -60,8 +58,8 @@ public class FdhWebSocketServerEndPoint{
 	@Autowired
 	private JsonMapper mapper;
 	
-	@Autowired
-	private FdhWebSocketServerConfig config;
+	//@Autowired
+	private DXWebSocketServerConfig config;
 	
 	private String nodeId;
 	
@@ -92,10 +90,10 @@ public class FdhWebSocketServerEndPoint{
 	public void onMessage(String message, Session session) {
 	    log.info("Websocket Message : " + message); //$NON-NLS-1$
 		
-	    log.info("RequestParameterMap : "+session.getUserProperties()); //$NON-NLS-1$
+	    log.debug("RequestParameterMap : "+session.getUserProperties()); //$NON-NLS-1$
 		this.context = (ApplicationContext) session.getUserProperties().get("applicationContext");
 		this.putFieldDataService = this.context.getBean(PutRouter.class);	
-		this.config = this.context.getBean(FdhWebSocketServerConfig.class);
+		this.config = this.context.getBean(DXWebSocketServerConfig.class);
 		this.mapper = this.context.getBean(JsonMapper.class);
 		this.mapper.init();
 		
@@ -152,11 +150,11 @@ public class FdhWebSocketServerEndPoint{
 				putFieldDataRequest.setExternalAttributeMap(attributeMap);
 				
 				this.putFieldDataService.putData(putFieldDataRequest, null, headers);
-				/*for (Session s:clients) {
+				for (Session s:clients) {
 					if (s.isOpen() && !this.nodeId.equals(s.getPathParameters().get("nodeId"))) {
 						s.getBasicRemote().sendText(message);
 					}
-				}*/
+				}
 				String response = "{\"messageId\": " + putFieldDataRequest.getCorrelationId() + ",\"statusCode\": 202}"; //$NON-NLS-1$ //$NON-NLS-2$ 
 				session.getBasicRemote().sendText(response);
 			}else if ("broadcast".equalsIgnoreCase(this.nodeId)) { 
@@ -165,15 +163,15 @@ public class FdhWebSocketServerEndPoint{
 						s.getBasicRemote().sendText(message);
 					}
 				}
-			} else {
 				session.getBasicRemote().sendText("SUCCESS"); //$NON-NLS-1$
-			}
+			}			
 		} catch (Throwable e) {
 		    log.error("unable to process websocket message",e);
 		    throw new RuntimeException("unable to process websocket message",e);
 		}
 	}
 
+	
 	/**
 	 * @param session
 	 *            - session object

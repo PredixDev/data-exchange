@@ -1,0 +1,36 @@
+{
+	"putFieldDataCriteria": [{
+		"namespaces": [],
+		"fieldData": {
+			"field": [{
+				"fieldIdentifier": {
+					"complexType": "FieldIdentifier",
+					"source": "PREDIX_ASSET"
+				},
+				"parents": []
+			}],
+			"data": {
+				"complexType": "MetaData",
+				"name": "Asset Data File request",
+				"description": "putFieldDataRequestSetAlertStatus Meta Data ",
+				"source": "handler/assetPutFieldDataHandle",
+				"tags": []
+			}
+		}
+	}, {
+		"namespaces": [],
+		"fieldData": {
+			"field": [{
+				"fieldIdentifier": {
+					"complexType": "FieldIdentifier",
+					"source": "PREDIX_ASSET"
+				},
+				"parents": []
+			}],
+			"data": {
+				"complexType": "DataFile",
+				"name": "Asset Test File"
+			}
+		}
+	}]
+}

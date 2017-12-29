@@ -46,10 +46,11 @@ import com.ge.predix.entity.putfielddata.PutFieldDataRequest;
 import com.ge.predix.entity.putfielddata.PutFieldDataResult;
 import com.ge.predix.entity.util.map.AttributeMap;
 import com.ge.predix.entity.util.map.Entry;
+import com.ge.predix.solsvc.bootstrap.ams.common.IAssetConfig;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.asset.AssetGetFieldDataHandlerImpl;
 import com.ge.predix.solsvc.fdh.handler.timeseries.TimeseriesGetDataHandler;
-import com.ge.predix.solsvc.fdh.router.service.FdhWebSocketServerEndPoint;
+import com.ge.predix.solsvc.fdh.router.service.router.DXWebSocketServerEndPoint;
 import com.ge.predix.solsvc.fdh.router.service.router.PutRouter;
 import com.ge.predix.solsvc.fdh.router.util.XmlSupport;
 import com.ge.predix.solsvc.restclient.impl.RestClient;
@@ -83,11 +84,17 @@ public abstract class BaseTest {
 	/**
 	 * 
 	 */
-	@Autowired
-	protected RestClient restClient;
+	
 
 	@Autowired
 	private PutRouter metaDataputFieldDataService;
+	
+	 @Autowired
+		protected IAssetConfig assetRestConfig;
+	 
+	 @Autowired
+		protected RestClient restClient;
+	    
 	/**
 	 * 
 	 */
@@ -98,8 +105,8 @@ public abstract class BaseTest {
 	 * @return -
 	 */
 	@Bean
-	public FdhWebSocketServerEndPoint fdhWebSocketServerEndPoint() {
-		return new FdhWebSocketServerEndPoint();
+	public DXWebSocketServerEndPoint fdhWebSocketServerEndPoint() {
+		return new DXWebSocketServerEndPoint();
 	}
 
 	/**
