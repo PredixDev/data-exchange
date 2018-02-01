@@ -84,17 +84,22 @@ public abstract class BaseTest {
 	/**
 	 * 
 	 */
-	
 
 	@Autowired
 	private PutRouter metaDataputFieldDataService;
-	
-	 @Autowired
-		protected IAssetConfig assetRestConfig;
-	 
-	 @Autowired
-		protected RestClient restClient;
-	    
+
+	/**
+	* 
+	*/
+	@Autowired
+	protected IAssetConfig assetRestConfig;
+
+	/**
+	* 
+	*/
+	@Autowired
+	protected RestClient restClient;
+
 	/**
 	 * 
 	 */

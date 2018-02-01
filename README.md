@@ -27,13 +27,29 @@ PredixAssetHandler, PredixTimeseriesHandler, PredixEventHubHandler, PredixBlobst
 
 <img src="images/fdh_handlers.png">
 
-Any service, such as [rmd-analytics](https://github.com/predixdev/rmd-analytics) or [Ingestion](https://github.com/predixdev/dataingestion-service) can leverage the Data Exchange to pass runtime requests to get or put data.  The api, architecture and implementation are portable beyond cloud microservices.  The api provides data resolution for any field from any datasource (customer specific datasources, files, hadoop, rdbms, cache, Asset, Timeseries, etc)
+Any service, such as [rmd-analytics](https://github.com/predixdev/rmd-analytics) or [a UI](https://github.com/predixdev/predix-webapp-starter) can leverage the Data Exchange to pass runtime requests to get or put data.  The api, architecture and implementation are portable beyond cloud microservices.  The api provides data resolution for any field from any datasource (customer specific datasources, files, hadoop, rdbms, cache, Asset, Timeseries, etc)
 
-For example, the Digital Twin Analytics Reference App saves Asset records using the AssetHandler and puts a message on a queue using the RabbitMQHandler, all with one HTTP Request.  (The Queue message triggers Predix Analytics orchestrations to run).
+## Features
 
-Runtime resolution of Fields allows for saved Queries applied to Event data.  Once a Handler is written, you won't have to return to it.  This frees up the team to build more value-add services and not worry about the Data Retrieval and Storage.  Also you can swap out Data Sources quite easily by adding a different Handler.
+- Data Exchange accepts multiple requests. For example, the Digital Twin Analytics Reference App saves Asset records using the AssetHandler and puts a message on a queue using the RabbitMQHandler, all with one HTTP Request.  (The Queue message triggers Predix Analytics orchestrations to run).
 
-##When do I need Data Exchange?
+- Runtime resolution of Fields allows for saved Queries applied to Event data.  We call this runtime data binding.  This allows analytic processes to have a common API that delegates to data-exchange data retrieval. 
+
+- Protocol switching or facading is another feature.  E.g. the Data Exchange REST API fronts the Time Series Web Socket API, allowing for clients not capable yet on Web Sockets, to insert Time Series data.  Same holds true for Rabbit MQ and Event Hub messages.  Data Exchange can receive an HTTP request and place the Body as a payload on a queue.
+
+- Another protocol switching use case is gRPC.  Data Exchange can register as an Event Hub listener and message payloads can be routed to one of the Data Exchange handlers for processing.  With a single subscription many of the Predix Apis become available to Event Hub publishers.
+
+- Also you can swap out Data Sources quite easily by adding a different Handler for a datasource.  On the Edge, you might use a File or an H2 database, in the Cloud you might access a REST API.  Data Exchange allows you provide the same API for both situations.  
+
+- Data Transformation is another use case.  Data can be requested in a different format than the datasource provides.  This makes integrating between systems where data format cannot be changed possible.
+
+- Data Exchange supports cross resource joins.  For example, a Time Series call might need a piece of information from an Asset Model record.  Using mustache templates, {{put asset field value here}}, allows for dynamic cross resource data binding.  
+
+- Data Exchange supports getting subresources.  Using XPATH, JSON Path or other techniques as specific field or sub-object from a larger structure can be retrieved.  E.g. in a JSON Asset model structure, you might want to retrieve just the Temperature Tag object.  Or the High Alarm Threshold from the Temperature Tag object.
+
+- An unimplemented, but coming soon feature is data targeting.  In one request you can get data from a data source and target the result to another.  E.g. you could make a SQL query to Postgres and store the result in a csv file in Blobstore.
+
+## When do I need Data Exchange?
 
 - I need to get data from multiple data sources with a single call
 - I need to put data results to multiple data sources with a single call
@@ -45,7 +61,7 @@ Runtime resolution of Fields allows for saved Queries applied to Event data.  On
 - I need to use Predix provided data sources and also my own data sources and do runtime data binding with unit of measure conversion and data transformation to leverage other processes, such as analytics, expecting data in a certain format and unit.
 
 
-##Semantics
+## Semantics
 
 All data sources can store records and many have query languages to retrieve records.
 
@@ -56,7 +72,7 @@ Data Exchange has two semantics
 
 In many cases Data Exchange is a pass through.  In others, the process needing data requires it in a different shape.  In Predix we favor the Predix data structures, but Data Exchange allows you to use your custom data shapes too.
 
-##FIELDS help Traverse the Model
+## FIELDS help Traverse the Model
 
 The 'field' is nothing more than a URI representing attributes or entities in a source system.  E.g. the field /asset/assetId represents the assetId attribute on the Asset entity.  Or /address/addressLine1 represents the addressLine1 field on the Address entity.  
 
@@ -68,7 +84,7 @@ In JSON, all structures are primitives, objects, maps or lists.  In this example
 
 >Our implementation uses standard json libraries to find the attribute within the model.  We use Jackson since it handles polymorphic objects better than Gson.  We also do not have to register mappers for each object type we create.  This should increase productivity since you can concentrate on Modeling and not the plumbing of marshaling/unmarshaling Json.
 
-##DataSource
+## DataSource
 
 A Field uri represents a data attribute or entity, but where does that data come from?  You simply define the Source in the GET request and the router sends the GET or PUT request on to the right Handler.  In this example the data source for hiAlarmThreshold of crank-frame-dischargepressure on an AssetTag on an Asset named Compressor-2015, is PREDIX_ASSET, so the GET request is simply forwarded on to the PredixAssetHandler.
 
@@ -86,13 +102,13 @@ A Field uri represents a data attribute or entity, but where does that data come
 
 This nice thing to notice here is that Configuring this GET request ahead of time, allows for late data-binding at runtime from any Data Source.
 
-##GetFieldData - GET
+## GetFieldData - GET
 (future)The current GetData api uses a POST body.  Using Rest semantics it should be quite easy to create a Rest GET api accessing any field in any datasource.
 
-##GetFieldData - RelationalDBHandler - POST
+## GetFieldData - RelationalDBHandler - POST
 (future)Seamlessly mapping these Rest semantics to SQL semantics has been done in the past but is not ported to the cloud.  This allows the traversal of any Object/Relational Graph relative to an 'id', such as an assetId.  
 
-##GetFieldData - PredixAssetHandler - POST
+## GetFieldData - PredixAssetHandler - POST
 The GetFieldData API has a simple List of Criteria, shown below.  Each criteria has a FieldIdentifier and a Filter.  In this example we are retrieving the hiAlarmThreshold attribute on an Asset.AssetTag("crank-frame-dischargepressure") where /asset/assetId = "/asset/compressor-2017".  AssetTag is a map.  
 
 Notice the use of the FieldIdentifier object, you'll see this a lot and the id and source is how the API handles Federated datasources.  Also note the FieldIdentifier is typed.  Identifier (CustomerIdentifier, TurbineIdentifier, AddressIdentier, etc) has polymorphic semantics so you can have a list of varying ids, very helpful in a SOA.
@@ -124,29 +140,29 @@ The FieldIdentifer has an id, name, and source.  The id is a Rest principle base
 
 The selection Filter is a where clause which has Animal, Cat, Dog polymorphic semantics.  We can define any Filter we want.  We have defined 4 Filters which will take you a long way in Predix.  Filters can return multiple results (like rows in a database) and thus actions can be performed on the set of data returned.
 
-###AssetFilter
+### AssetFilter
 Mirrors the Predix Asset API.
 
 <img src="images/AssetFilter.png">
 
-###TimeseriesFilter
+### TimeseriesFilter
 Mirrors the Predix Timeseries API.
 
 <img src="images/TimeseriesFilter.png">
 
-##AssetCriteriaAwareTimeseriesFilter
+## AssetCriteriaAwareTimeseriesFilter
 Drives behavior which looks up the AssetModel, gets the Timeseries Tag, then calls Timeseries.  This is more realistic since your Asset Model drives everything and is the one place where the latest info can be found.  The Reference Apps follow this design pattern.
 
 <img src="images/AssetCriteriaAwareTimeseriesFilter.png">
 
-###FieldFilter
+### FieldFilter
 Allows for basic AND/OR semantics similar to a where clause.
 
 <img src="images/field-selection-filter.png">
 
 
-##GetFieldData - PredixTimeSeriesHandler - POST
-Here is another example of a Get Handler, this time for Predix Timeseries.  In this example we are retreiving the data from the last 5 days from Predix Timeseries for the tag Compressor-2015:DischargePressure.
+## GetFieldData - PredixTimeSeriesHandler - POST
+Here is another example of a Get Handler, this time for Predix Timeseries.  In this example we are retreiving the data from the last 1 hour from Predix Timeseries for the tag Compressor-2015:DischargePressure.
 
 ```json
 {
@@ -176,7 +192,7 @@ Here is another example of a Get Handler, this time for Predix Timeseries.  In t
 }
 ```
 
-##PutFieldData
+## PutFieldData
 
 This is a PutFieldDataCriteria setting the alertStatus attribute to false.  The object traversal is a little long due to historic factors.  This is from a working analytics example where we can jump to another Model in Predix Asset, in this case the TagExtensions model.  In other words, we searched for an Asset but the alertStatus.value is from a second query for TagExtensions following the TagExtensions.uri much like a foreign key.  The PredixAssetHandler does all this traversal seemlessly, you can define Fields without having to code the object graph traversal each time.  This allows you to solve the problem at hand and not worry about the Json Objects.
 
@@ -211,7 +227,7 @@ This is a PutFieldDataCriteria setting the alertStatus attribute to false.  The 
 }
 ```
 
-##GetFieldDataResult
+## GetFieldDataResult
 
 The GetFieldDataResult and PutFieldDataRequest use a FieldData structure.  The Field represents the attribute for which the Data is for.  The Data also has Animal, Cat, Dog polymorphic semantics and can be any Data structure that you define.  Since this is the Industrial Internet, engineering units are also defined.
 
@@ -219,7 +235,7 @@ The GetFieldDataResult and PutFieldDataRequest use a FieldData structure.  The F
 
 <img src="images/fieldData.png">
 
-##Data
+## Data
 
 The most common data structures are Real, Int, Boolean, String, Timeseries, but any Data Type can be defined.  We recommend updating only single attributes within a larger structure.  This allows long-running algorithms to not update stale data.  (future) We recommend an optimistic locking technique be employed as a best-practice.
 
@@ -232,17 +248,17 @@ We also wrap the OSACBM (Open Standards Association for Condition Based Maintena
 <img height=300 src="images/DataExchange-OsacbmDataTypes.png">
 
 
-##Summary
+## Summary
 
 To summarize, Data Exchange can get Data for any Field from any Source using any Filter.  @Data, @Filter and @Identifier are extensible so any shape or structure of Data, Where Clause, or Id are supported.  Now you can save your requests and responses and do late data-binding for retrieving or storing data at the edge or in the cloud.  When you visit the sample [rmd-analytics](https://github.com/predixdev/rmd-analytics) API, you'll see Data Exchange works in tandem to accomplish this late data-binding for reusable Analytics.
 
-##Tech Stack
+## Tech Stack
 - Spring
 - SpringBoot
 - SpringTest
 - Maven
 
-##Microcomponents
+## Microcomponents
 - [AssetBootstrap](https://github.com/predixdev/asset-bootstrap)
 - [TimeseriesBootstrap](https://github.com/predixdev/timeseries-bootstrap)
 - [PredixBoot](https://github.com/predixdev/predix-boot)

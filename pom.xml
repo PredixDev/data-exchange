@@ -5,7 +5,7 @@
 
 	<groupId>com.ge.predix.solsvc</groupId>
 	<artifactId>data-exchange</artifactId>
-	<version>2.0.45</version>
+	<version>2.0.47</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,15 +16,15 @@
 	</parent>
 
 	<properties>
-		<ext-model.version>2.3.7</ext-model.version>
-		<ext-util.version>2.3.7</ext-util.version>
-		<fdh-bootstrap-client.version>2.0.33</fdh-bootstrap-client.version>
-		<fdh-asset-handler.version>2.0.33</fdh-asset-handler.version>
-		<fdh-rabbitmq-handler.version>2.0.33</fdh-rabbitmq-handler.version>
-		<fdh-timeseries-handler.version>2.0.33</fdh-timeseries-handler.version>
-		<fdh-eventhub-handler.version>2.0.33</fdh-eventhub-handler.version>
-		<fdh-websocket-handler.version>2.0.33</fdh-websocket-handler.version>
-		<fdh-custom-handler.version>2.0.33</fdh-custom-handler.version>
+		<ext-model.version>2.3.8</ext-model.version>
+		<ext-util.version>2.3.8</ext-util.version>
+		<data-exchange-client.version>2.0.35</data-exchange-client.version>
+		<fdh-asset-handler.version>2.0.35</fdh-asset-handler.version>
+		<fdh-rabbitmq-handler.version>2.0.35</fdh-rabbitmq-handler.version>
+		<fdh-timeseries-handler.version>2.0.35</fdh-timeseries-handler.version>
+		<fdh-eventhub-handler.version>2.0.35</fdh-eventhub-handler.version>
+		<fdh-websocket-handler.version>2.0.35</fdh-websocket-handler.version>
+		<fdh-custom-handler.version>2.0.35</fdh-custom-handler.version>
 
 		<jettison.version>1.1</jettison.version>
 		<cxf.version>3.1.7</cxf.version>
@@ -59,11 +59,6 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-extension-providers</artifactId>
 			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
     		<groupId>org.springframework.amqp</groupId>
@@ -120,8 +115,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.ge.predix.solsvc</groupId>
-			<artifactId>fdh-bootstrap-client</artifactId>
-			<version>${fdh-bootstrap-client.version}</version>
+			<artifactId>data-exchange-client</artifactId>
+			<version>${data-exchange-client.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -129,11 +124,11 @@
 			<artifactId>fdh-timeseries-handler</artifactId>
 			<version>${fdh-timeseries-handler.version}</version>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 			<groupId>com.ge.predix.solsvc</groupId>
 			<artifactId>fdh-eventhub-handler</artifactId>
 			<version>${fdh-eventhub-handler.version}</version>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>com.ge.predix.solsvc</groupId>
 			<artifactId>fdh-asset-handler</artifactId>

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -38,123 +39,108 @@ import com.ge.predix.solsvc.restclient.impl.RestClient;
  * @author predix
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =
-{
-        FdhRouterApplication.class, AssetGetFieldDataHandlerImpl.class, TimeseriesGetDataHandler.class, GetRouter.class
-})
+@SpringApplicationConfiguration(classes = { FdhRouterApplication.class, AssetGetFieldDataHandlerImpl.class,
+		TimeseriesGetDataHandler.class, GetRouter.class })
 @WebAppConfiguration
-@IntegrationTest(
-{
-        "server.port=9092"
-})
-public class TimeseriesPutFieldDataPerformanceTestHarness
-{
+@IntegrationTest({ "server.port=9092" })
+@ActiveProfiles("asset")
+public class TimeseriesPutFieldDataPerformanceTestHarness {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeseriesGetFieldDataIT.class);
+	private static final Logger log = LoggerFactory.getLogger(TimeseriesIT.class);
 
-    @Autowired
-    private RestClient          restClient;
+	@Autowired
+	private RestClient restClient;
 
-    @Autowired
-    private JsonMapper          jsonMapper;
+	@Autowired
+	private JsonMapper jsonMapper;
 
-    @Autowired
-    @Qualifier("defaultOauthRestConfig")
-    private IOauthRestConfig    restConfig;
+	@Autowired
+	@Qualifier("defaultOauthRestConfig")
+	private IOauthRestConfig restConfig;
 
-    /**
-     * @throws Exception -
-     */
-    @BeforeClass
-    public static void setUpBeforeClass()
-            throws Exception
-    {
-        // new RestTemplate();
-    }
+	/**
+	 * @throws Exception
+	 *             -
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		// new RestTemplate();
+	}
 
-    /**
-     * @throws Exception -
-     */
-    @AfterClass
-    public static void tearDownAfterClass()
-            throws Exception
-    {
-        //
-    }
+	/**
+	 * @throws Exception
+	 *             -
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		//
+	}
 
-    /**
-     * @throws Exception -
-     */
-    @SuppressWarnings({})
-    @Before
-    public void setUp()
-            throws Exception
-    {
-        this.jsonMapper.init();
-    }
+	/**
+	 * @throws Exception
+	 *             -
+	 */
+	@SuppressWarnings({})
+	@Before
+	public void setUp() throws Exception {
+		this.jsonMapper.init();
+	}
 
-    /**
-     * @throws Exception -
-     */
-    @After
-    public void tearDown()
-            throws Exception
-    {
-        //
-    }
+	/**
+	 * @throws Exception
+	 *             -
+	 */
+	@After
+	public void tearDown() throws Exception {
+		//
+	}
 
-    /**
-     * @throws IOException -
-     * @throws IllegalStateException -
-     */
-    @SuppressWarnings(
-    {
-            "nls"
-    })
-    @Test
-    public void testPutFieldData()
-            throws IllegalStateException, IOException
-    {
+	/**
+	 * @throws IOException
+	 *             -
+	 * @throws IllegalStateException
+	 *             -
+	 */
+	@SuppressWarnings({ "nls" })
+	@Test
+	public void testPutFieldData() throws IllegalStateException, IOException {
 
-        log.debug("================================");
-        String sensorName = "crank-frame-velocity";
-        String assetId = "compressor-2017";
+		log.debug("================================");
+		String sensorName = "crank-frame-velocity";
+		String assetId = "compressor-2017";
 
-        for (int i = 0; i < 1000; i++)
-        {
-            PutFieldDataRequest request = TestData.putFieldDataRequest(assetId, sensorName, 0, 10);
+		for (int i = 0; i < 1000; i++) {
+			PutFieldDataRequest request = TestData.putFieldDataRequest(assetId, sensorName, 0, 10);
 
-            String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
-            log.debug("URL = " + url);
+			String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
+			log.debug("URL = " + url);
 
-            List<Header> headers = new ArrayList<Header>();
-            headers.add(new BasicHeader("Content-Type", "application/json"));
-            this.restClient.addSecureTokenForHeaders(headers);
-            log.debug("REQUEST: Input json to get field data = " + this.jsonMapper.toJson(request));
+			List<Header> headers = new ArrayList<Header>();
+			headers.add(new BasicHeader("Content-Type", "application/json"));
+			this.restClient.addSecureTokenForHeaders(headers);
+			log.debug("REQUEST: Input json to get field data = " + this.jsonMapper.toJson(request));
 
-            CloseableHttpResponse response = null;
-            try
-            {
-                response = this.restClient.post(url, this.jsonMapper.toJson(request), headers,
-                        this.restConfig.getDefaultConnectionTimeout(), this.restConfig.getDefaultSocketTimeout());
+			CloseableHttpResponse response = null;
+			try {
+				response = this.restClient.post(url, this.jsonMapper.toJson(request), headers,
+						this.restConfig.getDefaultConnectionTimeout(), this.restConfig.getDefaultSocketTimeout());
 
-                log.info("RESPONSE: Response from Put Field Data  = " + response);
+				log.info("RESPONSE: Response from Put Field Data  = " + response);
 
-                String responseAsString = this.restClient.getResponse(response);
-                log.info("RESPONSE: Response from Put Field Data  = " + responseAsString);
+				String responseAsString = this.restClient.getResponse(response);
+				log.info("RESPONSE: Response from Put Field Data  = " + responseAsString);
 
-                Assert.assertNotNull(response);
-                Assert.assertNotNull(responseAsString);
-                Assert.assertFalse(responseAsString.contains("\"status\":500"));
-                Assert.assertFalse(responseAsString.contains("Internal Server Error"));
-                Assert.assertTrue(responseAsString.contains("errorEvent\":[]"));
-            }
-            finally
-            {
-                if ( response != null ) response.close();
+				Assert.assertNotNull(response);
+				Assert.assertNotNull(responseAsString);
+				Assert.assertFalse(responseAsString.contains("\"status\":500"));
+				Assert.assertFalse(responseAsString.contains("Internal Server Error"));
+				Assert.assertTrue(responseAsString.contains("errorEvent\":[]"));
+			} finally {
+				if (response != null)
+					response.close();
 
-            }
-        }
-    }
+			}
+		}
+	}
 
 }

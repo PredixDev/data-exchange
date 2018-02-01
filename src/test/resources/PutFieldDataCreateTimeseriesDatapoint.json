@@ -1,0 +1,24 @@
+{
+	"putFieldDataCriteria": [{
+		"namespaces": [],
+		"fieldData": {
+			"field": [{
+				"fieldIdentifier": {
+					"complexType": "FieldIdentifier",
+					"source": "PREDIX_TIMESERIES"
+				},
+				"parents": []
+			}],
+			"data": {
+				"complexType": "DatapointsIngestion",
+				"messageId": "c6dba738-0307-4010-a452-742198be6b90",
+				"body": [{
+					"name": "compressor-2017:crank-frame-velocity",
+					"datapoints": [
+						[1516390946427, 5.155958043974205]
+					]
+				}]
+			}
+		}
+	}]
+}

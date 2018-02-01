@@ -56,10 +56,16 @@ public class DXWebSocketServerConfig extends ServerEndpointConfig.Configurator i
           return new ServerEndpointExporter();        
     }
 
+	/**
+	 * @return -
+	 */
 	public String getDefaultFieldSource() {
-		return defaultFieldSource;
+		return this.defaultFieldSource;
 	}
 
+	/**
+	 * @param defaultFieldSource -
+	 */
 	public void setDefaultFieldSource(String defaultFieldSource) {
 		this.defaultFieldSource = defaultFieldSource;
 	}

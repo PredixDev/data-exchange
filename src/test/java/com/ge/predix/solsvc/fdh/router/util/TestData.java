@@ -55,9 +55,8 @@ public class TestData {
 	 * @return -
 	 */
 	@SuppressWarnings("nls")
-	public static GetFieldDataRequest getFieldDataRequest(String field,
-			String fieldSource, String expectedDataType, Object uriField,
-			Object uriFieldValue, Object startTime, Object endTime) {
+	public static GetFieldDataRequest getFieldDataRequest(String field, String fieldSource, String expectedDataType,
+			Object uriField, Object uriFieldValue, Object startTime, Object endTime) {
 		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
 		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
 
@@ -96,8 +95,7 @@ public class TestData {
 			FieldIdentifierValue startTimefieldIdentifierValue = new FieldIdentifierValue();
 			FieldIdentifier startTimeFieldIdentifier = new FieldIdentifier();
 			startTimeFieldIdentifier.setId("startTime");
-			startTimefieldIdentifierValue
-					.setFieldIdentifier(startTimeFieldIdentifier);
+			startTimefieldIdentifierValue.setFieldIdentifier(startTimeFieldIdentifier);
 			// fieldIdentifierValue.setValue("1438906239475");
 			startTimefieldIdentifierValue.setValue(startTime);
 			// fieldFilter.getFieldIdentifierValue().add(
@@ -106,8 +104,7 @@ public class TestData {
 			FieldIdentifierValue endTimefieldIdentifierValue = new FieldIdentifierValue();
 			FieldIdentifier endTimeFieldIdentifier = new FieldIdentifier();
 			endTimeFieldIdentifier.setId("endTime");
-			endTimefieldIdentifierValue
-					.setFieldIdentifier(endTimeFieldIdentifier);
+			endTimefieldIdentifierValue.setFieldIdentifier(endTimeFieldIdentifier);
 			// fieldIdentifierValue.setValue("1438906239475");
 			endTimefieldIdentifierValue.setValue(endTime);
 			// fieldFilter.getFieldIdentifierValue().add(
@@ -116,353 +113,352 @@ public class TestData {
 
 		getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
 		return getFieldDataRequest;
-	} 
+	}
 
-    /**
-     * @return -
-     */
-    @SuppressWarnings("nls")
-    public static PutFieldDataRequest putFieldDataRequestSetAlertStatus()
-    {
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-     
-        // Asset to Query
-        AssetFilter filter = new AssetFilter();
-        filter.setUri("/asset/compressor-2017");
+	/**
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	public static PutFieldDataRequest putFieldDataRequestSetAlertStatus() {
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
 
-        // Data to change
-        FieldData fieldData = new FieldData();
-        com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setId(
-                "/asset/assetTag/crank-frame-dischargepressure/alertStatusUri/attributes/alertStatus/value");
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        OsaData crankFrameVelocityData = new OsaData();
-        DMBool crankFrameVelocity = new DMBool();
-        crankFrameVelocity.setValue(true);
-        crankFrameVelocityData.setDataEvent(crankFrameVelocity);
-        fieldData.getField().add(field);
-        fieldData.setData(crankFrameVelocityData);
+		// Asset to Query
+		AssetFilter filter = new AssetFilter();
+		filter.setUri("/asset/compressor-2017");
 
-        PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
-        fieldDataCriteria.setFieldData(fieldData);
-        fieldDataCriteria.setFilter(filter);
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
+		// Data to change
+		FieldData fieldData = new FieldData();
+		com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier
+				.setId("/asset/assetTag/crank-frame-dischargepressure/alertStatusUri/attributes/alertStatus/value");
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		OsaData crankFrameVelocityData = new OsaData();
+		DMBool crankFrameVelocity = new DMBool();
+		crankFrameVelocity.setValue(true);
+		crankFrameVelocityData.setDataEvent(crankFrameVelocity);
+		fieldData.getField().add(field);
+		fieldData.setData(crankFrameVelocityData);
 
-        return putFieldDataRequest;
-    }
-    
-    /**
-     * @return -
-     */
-    @SuppressWarnings("nls")
-    public static PutFieldDataRequest putMetaDataFieldDataRequest()
-    {
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-      
-  
-        // Data to change
-        FieldData fieldData = new FieldData();
-        com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        MetaData metaData = new MetaData();
-        metaData.setSource("handler/assetPutFieldDataHandle");
-        metaData.setDescription("putFieldDataRequestSetAlertStatus Meta Data ");
-        metaData.setName("Asset Single Put request");
-        fieldData.getField().add(field);
-        fieldData.setData(metaData);
+		PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
+		fieldDataCriteria.setFieldData(fieldData);
+		fieldDataCriteria.setFilter(filter);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
 
-        PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
-        fieldDataCriteria.setFieldData(fieldData);
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
+		return putFieldDataRequest;
+	}
 
-        return putFieldDataRequest;
-    }
+	/**
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	public static PutFieldDataRequest putMetaDataFieldDataRequest() {
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
 
-    /**
-     * @return -
-     */
-    @SuppressWarnings("nls")
-    public static PutFieldDataRequest customPutFieldDataRequest()
-    {
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
+		// Data to change
+		FieldData fieldData = new FieldData();
+		com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		MetaData metaData = new MetaData();
+		metaData.setSource("handler/assetPutFieldDataHandle");
+		metaData.setDescription("putFieldDataRequestSetAlertStatus Meta Data ");
+		metaData.setName("Asset Single Put request");
+		fieldData.getField().add(field);
+		fieldData.setData(metaData);
 
-        // Asset to Query
-        FieldFilter filter = new FieldFilter();
-        FieldIdentifierValue fieldIdentifierValue = new FieldIdentifierValue();
-        FieldIdentifier assetIdFieldIdentifier = new FieldIdentifier();
-        assetIdFieldIdentifier.setId("/asset/assetId");
-        fieldIdentifierValue.setFieldIdentifier(assetIdFieldIdentifier);
-        fieldIdentifierValue.setValue("/asset/compressor-2017");
-        filter.getFieldIdentifierValue().add(fieldIdentifierValue);
+		PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
+		fieldDataCriteria.setFieldData(fieldData);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
 
-        // Data to change
-        FieldData fieldData = new FieldData();
-        com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setId("/asset/assetTag/crank-frame-velocity/hiAlarmThreshold");
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        OsaData crankFrameVelocityData = new OsaData();
-        DMReal crankFrameVelocity = new DMReal();
-        crankFrameVelocity.setValue(19.88);
-        crankFrameVelocityData.setDataEvent(crankFrameVelocity);
-        fieldData.getField().add(field);
-        fieldData.setData(crankFrameVelocityData);
+		return putFieldDataRequest;
+	}
 
-        PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
-        fieldDataCriteria.setFieldData(fieldData);
-        fieldDataCriteria.setFilter(filter);
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
+	/**
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	public static PutFieldDataRequest customPutFieldDataRequest() {
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
 
-        return putFieldDataRequest;
-    }
+		// Asset to Query
+		FieldFilter filter = new FieldFilter();
+		FieldIdentifierValue fieldIdentifierValue = new FieldIdentifierValue();
+		FieldIdentifier assetIdFieldIdentifier = new FieldIdentifier();
+		assetIdFieldIdentifier.setId("/asset/assetId");
+		fieldIdentifierValue.setFieldIdentifier(assetIdFieldIdentifier);
+		fieldIdentifierValue.setValue("/asset/compressor-2017");
+		filter.getFieldIdentifierValue().add(fieldIdentifierValue);
 
-    /**
-     * @return -
-     */
-    @SuppressWarnings("nls")
-    public static PutFieldDataRequest assetPutFieldDataRequest()
-    {
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-       
+		// Data to change
+		FieldData fieldData = new FieldData();
+		com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setId("/asset/assetTag/crank-frame-velocity/hiAlarmThreshold");
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		OsaData crankFrameVelocityData = new OsaData();
+		DMReal crankFrameVelocity = new DMReal();
+		crankFrameVelocity.setValue(19.88);
+		crankFrameVelocityData.setDataEvent(crankFrameVelocity);
+		fieldData.getField().add(field);
+		fieldData.setData(crankFrameVelocityData);
 
-        // Asset to Query
-        AssetFilter assetfilter = new AssetFilter();
-        assetfilter.setUri("/asset/compressor-2017");
+		PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
+		fieldDataCriteria.setFieldData(fieldData);
+		fieldDataCriteria.setFilter(filter);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
 
-        // Data to change
-        FieldData fieldData = new FieldData();
-        com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setId("/asset/assetTag/crank-frame-velocity/hiAlarmThreshold");
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        OsaData crankFrameVelocityData = new OsaData();
-        DMReal crankFrameVelocity = new DMReal();
-        crankFrameVelocity.setValue(19.88);
-        crankFrameVelocityData.setDataEvent(crankFrameVelocity);
-        fieldData.getField().add(field);
-        fieldData.setData(crankFrameVelocityData);
+		return putFieldDataRequest;
+	}
 
-        PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
-        fieldDataCriteria.setFieldData(fieldData);
-        fieldDataCriteria.setFilter(assetfilter);
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
+	/**
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	public static PutFieldDataRequest assetPutFieldDataRequest() {
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
 
-        return putFieldDataRequest;
-    }
+		// Asset to Query
+		AssetFilter assetfilter = new AssetFilter();
+		assetfilter.setUri("/asset/compressor-2017");
 
-    /**
-     * @param assetId -
-     * @param nodeName -
-     * @param lowerThreshold - 
-     * @param upperThreshold -
-     * @return -
-     */
-    public static PutFieldDataRequest putFieldDataRequest(String assetId, String nodeName, double lowerThreshold, double upperThreshold)
-    {
-        DatapointsIngestion datapointsIngestion = createTimeseriesDataBody(assetId, nodeName, lowerThreshold, upperThreshold);
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-        PutFieldDataCriteria criteria = new PutFieldDataCriteria();
-        FieldData fieldData = new FieldData();
-        Field field = new Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		// Data to change
+		FieldData fieldData = new FieldData();
+		com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setId("/asset/assetTag/crank-frame-velocity/hiAlarmThreshold");
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		OsaData crankFrameVelocityData = new OsaData();
+		DMReal crankFrameVelocity = new DMReal();
+		crankFrameVelocity.setValue(19.88);
+		crankFrameVelocityData.setDataEvent(crankFrameVelocity);
+		fieldData.getField().add(field);
+		fieldData.setData(crankFrameVelocityData);
 
-        fieldIdentifier.setSource(FieldSourceEnum.PREDIX_TIMESERIES.name());
-        field.setFieldIdentifier(fieldIdentifier);
-        List<Field> fields = new ArrayList<Field>();
-        fields.add(field);
-        fieldData.setField(fields);
+		PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
+		fieldDataCriteria.setFieldData(fieldData);
+		fieldDataCriteria.setFilter(assetfilter);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
 
-        fieldData.setData(datapointsIngestion);
-        criteria.setFieldData(fieldData);
-        List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
-        list.add(criteria);
-        putFieldDataRequest.setPutFieldDataCriteria(list);
+		return putFieldDataRequest;
+	}
 
-        return putFieldDataRequest;
-    }
+	/**
+	 * @param assetId
+	 *            -
+	 * @param nodeName
+	 *            -
+	 * @param lowerThreshold
+	 *            -
+	 * @param upperThreshold
+	 *            -
+	 * @return -
+	 */
+	public static PutFieldDataRequest putFieldDataRequest(String assetId, String nodeName, double lowerThreshold,
+			double upperThreshold) {
+		DatapointsIngestion datapointsIngestion = createTimeseriesDataBody(assetId, nodeName, lowerThreshold,
+				upperThreshold);
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
+		PutFieldDataCriteria criteria = new PutFieldDataCriteria();
+		FieldData fieldData = new FieldData();
+		Field field = new Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
 
-    @SuppressWarnings("nls")
-    private static DatapointsIngestion createTimeseriesDataBody(String assetId, String nodeName, double lowerThreshold, double upperThreshold)
-    {
-        DatapointsIngestion dpIngestion = new DatapointsIngestion();
-        dpIngestion.setMessageId(UUID.randomUUID().toString());
-        List<Body> bodies = new ArrayList<Body>();
-        // log.info("NodeList : " + this.mapper.toJson(aNodeList));
+		fieldIdentifier.setSource(FieldSourceEnum.PREDIX_TIMESERIES.name());
+		field.setFieldIdentifier(fieldIdentifier);
+		List<Field> fields = new ArrayList<Field>();
+		fields.add(field);
+		fieldData.setField(fields);
 
-        Body body = new Body();
-        List<Object> datapoints = new ArrayList<Object>();
-        body.setName(assetId + ":" + nodeName);
+		fieldData.setData(datapointsIngestion);
+		criteria.setFieldData(fieldData);
+		List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
+		list.add(criteria);
+		putFieldDataRequest.setPutFieldDataCriteria(list);
 
-        List<Object> datapoint = new ArrayList<Object>();
-        datapoint.add(getCurrentTimestamp());
-        datapoint.add(generateRandomUsageValue(lowerThreshold, upperThreshold));
-        datapoints.add(datapoint);
+		return putFieldDataRequest;
+	}
 
-        body.setDatapoints(datapoints);
-        bodies.add(body);
+	@SuppressWarnings("nls")
+	private static DatapointsIngestion createTimeseriesDataBody(String assetId, String nodeName, double lowerThreshold,
+			double upperThreshold) {
+		DatapointsIngestion dpIngestion = new DatapointsIngestion();
+		dpIngestion.setMessageId(UUID.randomUUID().toString());
+		List<Body> bodies = new ArrayList<Body>();
+		// log.info("NodeList : " + this.mapper.toJson(aNodeList));
 
-        dpIngestion.setBody(bodies);
+		Body body = new Body();
+		List<Object> datapoints = new ArrayList<Object>();
+		body.setName(assetId + ":" + nodeName);
 
-        return dpIngestion;
-    }
+		List<Object> datapoint = new ArrayList<Object>();
+		datapoint.add(getCurrentTimestamp());
+		datapoint.add(generateRandomUsageValue(lowerThreshold, upperThreshold));
+		datapoints.add(datapoint);
 
-    private static Timestamp getCurrentTimestamp()
-    {
-        java.util.Date date = new java.util.Date();
-        Timestamp ts = new Timestamp(date.getTime());
-        return ts;
-    }
-    
-    private static double generateRandomUsageValue(double low, double high)
-    {
-        return low + Math.random() * (high - low);
-    }
-    
-    /**
-     * @return -
-     */
-    @SuppressWarnings("nls")
-    public static PutFieldDataRequest putMetaDataWithAssetDataFileRequest()
-    {
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-      
-  
-        // Data to change
-        FieldData fieldData = new FieldData();
-        com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        MetaData metaData = new MetaData();
-        metaData.setSource("handler/assetPutFieldDataHandle");
-        metaData.setDescription("putFieldDataRequestSetAlertStatus Meta Data ");
-        metaData.setName("Asset Data File request");
-        fieldData.getField().add(field);
-        fieldData.setData(metaData);
+		body.setDatapoints(datapoints);
+		bodies.add(body);
 
-        PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
-        fieldDataCriteria.setFieldData(fieldData);
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
-        
-        PutFieldDataCriteria fieldDataFileCriteria = new PutFieldDataCriteria();
-        // Data to change
-         fieldData = new FieldData();
-         field = new com.ge.predix.entity.field.Field();
-         fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setSource("PREDIX_ASSET");
-        field.setFieldIdentifier(fieldIdentifier);
-        DataFile dataFile = new DataFile();
-        dataFile.setName("Asset Test File");
-        fieldData.getField().add(field);
-        fieldData.setData(dataFile);
-        fieldDataFileCriteria.setFieldData(fieldData);
-        
-        putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataFileCriteria);
+		dpIngestion.setBody(bodies);
 
-        return putFieldDataRequest;
-    }
-    
-   /***
-    * 
-    * @param dataexUri -
-    * @return -
-    */
-    public static GetFieldDataRequest getDataExchangeMetaDataRequest(String dataexUri)
-    {
-        GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
-        FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
-        List<FieldSelection> fieldSelections = new ArrayList<FieldSelection>();
-        FieldSelection fieldSelection = new FieldSelection();
-        AssetFilter assetFilter = new AssetFilter();
-       
-        // add FieldIdValue pair for assetId
-        FieldIdentifierValue fieldIdentifierValue = new FieldIdentifierValue();
-        FieldIdentifier assetIdFieldIdentifier = new FieldIdentifier();
-        assetIdFieldIdentifier.setId("MetaData"); //$NON-NLS-1$
-        assetIdFieldIdentifier.setSource(FieldSourceEnum.PREDIX_ASSET.name());
-        fieldIdentifierValue.setFieldIdentifier(assetIdFieldIdentifier);
-        fieldIdentifierValue.setValue(dataexUri);
-        fieldSelection.setFieldIdentifier(assetIdFieldIdentifier);
-        fieldSelections.add(fieldSelection);
-       
-        assetFilter.setUri(dataexUri);
-        fieldDataCriteria.setFilter(assetFilter);
-        fieldDataCriteria.setFieldSelection(fieldSelections);
-        getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
-        return getFieldDataRequest;
-    }
-    
-    /**
-     * @param assetUri -
-     * @param selection -
-     * @param expectedDataType -
-     * @return -
-     */
-    public static GetFieldDataRequest createGetAssetRequest(String assetUri, String selection, String expectedDataType)
-    {
-        GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
+		return dpIngestion;
+	}
 
-        FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+	private static Timestamp getCurrentTimestamp() {
+		java.util.Date date = new java.util.Date();
+		Timestamp ts = new Timestamp(date.getTime());
+		return ts;
+	}
 
-        // SELECT
-        FieldSelection fieldSelection = new FieldSelection();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
-        fieldIdentifier.setSource(FieldSourceEnum.PREDIX_ASSET.name());
-        fieldIdentifier.setId(selection);
-        fieldSelection.setFieldIdentifier(fieldIdentifier);
-        fieldSelection.setExpectedDataType(expectedDataType);
+	private static double generateRandomUsageValue(double low, double high) {
+		return low + Math.random() * (high - low);
+	}
 
-        // SELECT
-        fieldDataCriteria.getFieldSelection().add(fieldSelection);
+	/**
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	public static PutFieldDataRequest putMetaDataWithAssetDataFileRequest() {
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
 
-        // FILTER
-        AssetFilter assetFilter = new AssetFilter();
-        assetFilter.setUri(assetUri);
+		// Data to change
+		FieldData fieldData = new FieldData();
+		com.ge.predix.entity.field.Field field = new com.ge.predix.entity.field.Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		MetaData metaData = new MetaData();
+		metaData.setSource("handler/assetPutFieldDataHandle");
+		metaData.setDescription("putFieldDataRequestSetAlertStatus Meta Data ");
+		metaData.setName("Asset Data File request");
+		fieldData.getField().add(field);
+		fieldData.setData(metaData);
 
-        // WHERE
-        fieldDataCriteria.setFilter(assetFilter);
-        
+		PutFieldDataCriteria fieldDataCriteria = new PutFieldDataCriteria();
+		fieldDataCriteria.setFieldData(fieldData);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataCriteria);
 
-        getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
-        return getFieldDataRequest;
-    }
-    /**
-     * @param assetId -
-     * @param nodeName -
-     * @param lowerThreshold - 
-     * @param upperThreshold -
-     * @return -
-     */
-    public static PutFieldDataRequest putFieldDataRequestEventHub(String assetId, String nodeName, double lowerThreshold, double upperThreshold,JsonMapper jsonMapper)
-    {
-        DatapointsIngestion datapointsIngestion = createTimeseriesDataBody(assetId, nodeName, lowerThreshold, upperThreshold);
-        PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
-        PutFieldDataCriteria criteria = new PutFieldDataCriteria();
-        FieldData fieldData = new FieldData();
-        Field field = new Field();
-        FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		PutFieldDataCriteria fieldDataFileCriteria = new PutFieldDataCriteria();
+		// Data to change
+		fieldData = new FieldData();
+		field = new com.ge.predix.entity.field.Field();
+		fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setSource("PREDIX_ASSET");
+		field.setFieldIdentifier(fieldIdentifier);
+		DataFile dataFile = new DataFile();
+		dataFile.setName("Asset Test File");
+		fieldData.getField().add(field);
+		fieldData.setData(dataFile);
+		fieldDataFileCriteria.setFieldData(fieldData);
 
-        fieldIdentifier.setSource("handler/eventHubPutFieldDataHandler");
-        field.setFieldIdentifier(fieldIdentifier);
-        List<Field> fields = new ArrayList<Field>();
-        fields.add(field);
-        fieldData.setField(fields);
+		putFieldDataRequest.getPutFieldDataCriteria().add(fieldDataFileCriteria);
 
-        PredixString data = new PredixString();
-        data.setString(jsonMapper.toJson(datapointsIngestion));
-        fieldData.setData(data);
-        criteria.setFieldData(fieldData);
-        List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
-        list.add(criteria);
-        putFieldDataRequest.setPutFieldDataCriteria(list);
+		return putFieldDataRequest;
+	}
 
-        
-        return putFieldDataRequest;
-    }
+	/***
+	 * 
+	 * @param dataexUri
+	 *            -
+	 * @return -
+	 */
+	public static GetFieldDataRequest getDataExchangeMetaDataRequest(String dataexUri) {
+		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
+		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+		List<FieldSelection> fieldSelections = new ArrayList<FieldSelection>();
+		FieldSelection fieldSelection = new FieldSelection();
+		AssetFilter assetFilter = new AssetFilter();
+
+		// add FieldIdValue pair for assetId
+		FieldIdentifierValue fieldIdentifierValue = new FieldIdentifierValue();
+		FieldIdentifier assetIdFieldIdentifier = new FieldIdentifier();
+		assetIdFieldIdentifier.setId("MetaData"); //$NON-NLS-1$
+		assetIdFieldIdentifier.setSource(FieldSourceEnum.PREDIX_ASSET.name());
+		fieldIdentifierValue.setFieldIdentifier(assetIdFieldIdentifier);
+		fieldIdentifierValue.setValue(dataexUri);
+		fieldSelection.setFieldIdentifier(assetIdFieldIdentifier);
+		fieldSelections.add(fieldSelection);
+
+		assetFilter.setUri(dataexUri);
+		fieldDataCriteria.setFilter(assetFilter);
+		fieldDataCriteria.setFieldSelection(fieldSelections);
+		getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
+		return getFieldDataRequest;
+	}
+
+	/**
+	 * @param assetUri
+	 *            -
+	 * @param selection
+	 *            -
+	 * @param expectedDataType
+	 *            -
+	 * @return -
+	 */
+	public static GetFieldDataRequest createGetAssetRequest(String assetUri, String selection,
+			String expectedDataType) {
+		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
+
+		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+
+		// SELECT
+		FieldSelection fieldSelection = new FieldSelection();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+		fieldIdentifier.setSource(FieldSourceEnum.PREDIX_ASSET.name());
+		fieldIdentifier.setId(selection);
+		fieldSelection.setFieldIdentifier(fieldIdentifier);
+		fieldSelection.setExpectedDataType(expectedDataType);
+
+		// SELECT
+		fieldDataCriteria.getFieldSelection().add(fieldSelection);
+
+		// FILTER
+		AssetFilter assetFilter = new AssetFilter();
+		assetFilter.setUri(assetUri);
+
+		// WHERE
+		fieldDataCriteria.setFilter(assetFilter);
+
+		getFieldDataRequest.getFieldDataCriteria().add(fieldDataCriteria);
+		return getFieldDataRequest;
+	}
+
+	/**
+	 * @param assetId -
+	 * @param nodeName -
+	 * @param lowerThreshold -
+	 * @param upperThreshold -
+	 * @param jsonMapper -
+	 * @return -
+	 */
+	public static PutFieldDataRequest putFieldDataRequestEventHub(String assetId, String nodeName,
+			double lowerThreshold, double upperThreshold, JsonMapper jsonMapper) {
+		DatapointsIngestion datapointsIngestion = createTimeseriesDataBody(assetId, nodeName, lowerThreshold,
+				upperThreshold);
+		PutFieldDataRequest putFieldDataRequest = new PutFieldDataRequest();
+		PutFieldDataCriteria criteria = new PutFieldDataCriteria();
+		FieldData fieldData = new FieldData();
+		Field field = new Field();
+		FieldIdentifier fieldIdentifier = new FieldIdentifier();
+
+		fieldIdentifier.setSource("handler/eventHubPutFieldDataHandler"); //$NON-NLS-1$
+		field.setFieldIdentifier(fieldIdentifier);
+		List<Field> fields = new ArrayList<Field>();
+		fields.add(field);
+		fieldData.setField(fields);
+
+		PredixString data = new PredixString();
+		data.setString(jsonMapper.toJson(datapointsIngestion));
+		fieldData.setData(data);
+		criteria.setFieldData(fieldData);
+		List<PutFieldDataCriteria> list = new ArrayList<PutFieldDataCriteria>();
+		list.add(criteria);
+		putFieldDataRequest.setPutFieldDataCriteria(list);
+
+		return putFieldDataRequest;
+	}
 }

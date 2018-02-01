@@ -1,8 +1,5 @@
 package com.ge.predix.solsvc.fdh.router;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -43,215 +39,205 @@ import com.ge.predix.entity.asset.Asset;
 import com.ge.predix.entity.field.fieldidentifier.FieldSourceEnum;
 import com.ge.predix.entity.model.Model;
 import com.ge.predix.entity.util.map.Map;
-import com.ge.predix.solsvc.bootstrap.ams.common.IAssetConfig;
 import com.ge.predix.solsvc.bootstrap.ams.dto.Attribute;
 import com.ge.predix.solsvc.bootstrap.ams.factories.AssetClientImpl;
-import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.asset.AssetPutDataHandlerImpl;
-import com.ge.predix.solsvc.fdh.handler.timeseries.TimeseriesPutDataHandler;
 import com.ge.predix.solsvc.restclient.config.IOauthRestConfig;
-import com.ge.predix.solsvc.restclient.impl.RestClient;
 
 /**
  * @author tturner
  */
-@SuppressWarnings(
-{
-        "nls"
-})
-@ActiveProfiles({"local"})
+@SuppressWarnings({ "nls" })
+@ActiveProfiles({ "local", "asset" })
 @ComponentScan
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {AssetPutFieldDataTest.class, AssetPutDataHandlerImpl.class})
-public class AssetPutFieldDataTest extends BaseTest
-{
-    private static final Logger          log = LoggerFactory.getLogger(AssetPutFieldDataTest.class.getName());
-    private static final String HTTP_PAYLOAD_JSON     = "application/json";
-    private static final String CONTAINER_SERVER_PORT = "9092";
+@SpringApplicationConfiguration(classes = { AssetPutFieldDataTest.class, AssetPutDataHandlerImpl.class })
+public class AssetPutFieldDataTest extends BaseTest {
+	private static final Logger log = LoggerFactory.getLogger(AssetPutFieldDataTest.class.getName());
+	private static final String HTTP_PAYLOAD_JSON = "application/json";
+	private static final String CONTAINER_SERVER_PORT = "9092";
 
-    
-    @Autowired
-    @Qualifier("AssetClient")
-    private AssetClientImpl assetClient;
-    
-    @Autowired
-	private IAssetConfig assetRestConfig;
-    
-//    @Autowired
-//	private RestClient restClient;
-    
-    private CloseableHttpResponse response;
-    
+	@Autowired
+	@Qualifier("AssetClient")
+	private AssetClientImpl assetClient;
 
-    @Autowired
-    @Qualifier("defaultOauthRestConfig")
-    private IOauthRestConfig    restConfig;
-    
-   
-    
-   
-    /**
-     * @throws Exception -
-     */
-    @Before
-    public void onSetUp()
-            throws Exception
-    {
-        //
-    	// make sure the correct RestClient is wired to serviceBase
-    			// It gets changed by mock testing PredixAssetClient
-    			MockitoAnnotations.initMocks(this);
-    			//this.assetClient.setRestClient(this.restClient);
-    			this.response = Mockito.mock(CloseableHttpResponse.class);      
-    }
+	
 
-    /**
-     * 
-     */
-    @After
-    public void onTearDown()
-    {
-        //
-    }
-    
+	// @Autowired
+	// private RestClient restClient;
 
-    /**
-     * @throws JMSException -
-     * @throws HttpException -
-     * @throws IOException -
-     * @throws JAXBException -
-     */
-    @Test
-    public void testPut()
-            throws  HttpException, IOException, JAXBException
-    {
-        Long solutionId = 1000l;
-        String namespace = "asset";
-        String attributeName = "attribute1";
-        String fieldId = namespace + "/" + attributeName;
-        String fieldName = namespace + "/" + attributeName;
-        String fieldSource = FieldSourceEnum.PREDIX_ASSET.name();
-       
-        double rawDataValue = 52.1d;
-        String assetId = "12345";
-       
-        Date now = new Date();
-       
-        List<Asset> assets = new ArrayList<Asset>();
-        Asset asset = new Asset();
-        asset.setAssetId("12345");
-        asset.setUri("/asset/getrb_2");
-        asset.setAttributes(new Map());
-        Attribute attribute = new Attribute(); 
-        attribute.getValue().add("value");
-        asset.getAttributes().put(attributeName,attribute );
-        assets.add(asset );       
-  	
-        
-//        Mockito.when(this.response.getStatusLine()).thenReturn(
-//				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
-//						HttpStatus.SC_OK, "test reason!"));
-//
-//		HttpEntity entity = Mockito.mock(HttpEntity.class);
-//		this.response.setEntity(entity);
-//		Mockito.when(
-//				this.restClient.get(Matchers.anyString(),
-//						Matchers.anyListOf(Header.class),Matchers.anyInt(), Matchers.anyInt())).thenReturn(
-//				this.response);
-//		String body = "[{\"uri\":\"/asset/getrb_2\",\"assetId\":12345}]";
-//				
-//		InputStream stream = new ByteArrayInputStream(body.getBytes());
-//		
-//		Mockito.when(entity.getContent()).thenReturn(stream);
-//		Mockito.when(entity.getContentLength()).thenReturn(
-//				new Long(body.length()));
-//		Mockito.when(this.response.getEntity()).thenReturn(entity);
-		
+	private CloseableHttpResponse response;
+
+	@Autowired
+	@Qualifier("defaultOauthRestConfig")
+	private IOauthRestConfig restConfig;
+
+	/**
+	 * @throws Exception
+	 *             -
+	 */
+	@Before
+	public void onSetUp() throws Exception {
+		//
+		// make sure the correct RestClient is wired to serviceBase
+		// It gets changed by mock testing PredixAssetClient
+		MockitoAnnotations.initMocks(this);
+		// this.assetClient.setRestClient(this.restClient);
+		this.response = Mockito.mock(CloseableHttpResponse.class);
+	}
+
+	/**
+	 * 
+	 */
+	@After
+	public void onTearDown() {
+		//
+	}
+
+	/**
+	 * @throws JMSException
+	 *             -
+	 * @throws HttpException
+	 *             -
+	 * @throws IOException
+	 *             -
+	 * @throws JAXBException
+	 *             -
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPut() throws HttpException, IOException, JAXBException {
+		Long solutionId = 1000l;
+		String namespace = "asset";
+		String attributeName = "attribute1";
+		String fieldId = namespace + "/" + attributeName;
+		String fieldName = namespace + "/" + attributeName;
+		String fieldSource = FieldSourceEnum.PREDIX_ASSET.name();
+
+		double rawDataValue = 52.1d;
+		String assetId = "12345";
+
+		Date now = new Date();
+
+		List<Asset> assets = new ArrayList<Asset>();
+		Asset asset = new Asset();
+		asset.setAssetId("12345");
+		asset.setUri("/asset/getrb_2");
+		asset.setAttributes(new Map());
+		Attribute attribute = new Attribute();
+		attribute.getValue().add("value");
+		asset.getAttributes().put(attributeName, attribute);
+		assets.add(asset);
+
+		// Mockito.when(this.response.getStatusLine()).thenReturn(
+		// new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
+		// HttpStatus.SC_OK, "test reason!"));
+		//
+		// HttpEntity entity = Mockito.mock(HttpEntity.class);
+		// this.response.setEntity(entity);
+		// Mockito.when(
+		// this.restClient.get(Matchers.anyString(),
+		// Matchers.anyListOf(Header.class),Matchers.anyInt(),
+		// Matchers.anyInt())).thenReturn(
+		// this.response);
+		// String body = "[{\"uri\":\"/asset/getrb_2\",\"assetId\":12345}]";
+		//
+		// InputStream stream = new ByteArrayInputStream(body.getBytes());
+		//
+		// Mockito.when(entity.getContent()).thenReturn(stream);
+		// Mockito.when(entity.getContentLength()).thenReturn(
+		// new Long(body.length()));
+		// Mockito.when(this.response.getEntity()).thenReturn(entity);
+
 		List<Header> headers = new ArrayList<Header>();
 		Header header = new BasicHeader("Content-Type", "application/json");
 		headers.add(header);
-		
-		//log.debug("headers is: " + headers);
-		
-		Mockito.when(this.assetClient.create(assets, headers)).thenReturn(response);
-        Mockito.when(this.restClient.hasToken(Matchers.anyListOf(Header.class)))
-        .thenReturn(true);
-        Mockito.when(this.restClient.hasZoneId(Matchers.anyListOf(Header.class)))
-        .thenReturn(true);
-        
-     /*   ProtocolVersion protoGet = new ProtocolVersion("HTTP", 1, 1);
-        BasicStatusLine lineGet = new BasicStatusLine(protoGet, HttpStatus.SC_OK, "test reason for Get");
-          HttpResponse responseGet = new BasicHttpResponse(lineGet);
-        */
-        CloseableHttpResponse responseGet = Mockito.mock(CloseableHttpResponse.class);
-        Mockito.when(responseGet.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "test reason testNoModelForPostOnPolymporphicClassThatExists"));
-      
-        HttpEntity entityGet = Mockito.mock(HttpEntity.class);
-        responseGet.setEntity(entityGet );
-        String bodyGet = "[]";
-        InputStream streamGet = new ByteArrayInputStream(bodyGet.getBytes());
-        Mockito.when(entityGet.getContent()).thenReturn(streamGet);
-        Mockito.when(entityGet.getContentLength()).thenReturn(new Long(bodyGet.length()));
 
+		// log.debug("headers is: " + headers);
 
-       /* ProtocolVersion protoPut = new ProtocolVersion("HTTP", 1, 1);
-        BasicStatusLine linePut = new BasicStatusLine(protoPut, HttpStatus.SC_NO_CONTENT, "test reason");
-        HttpResponse responsePut = new BasicHttpResponse(linePut);*/
-        
-        CloseableHttpResponse responsePut = Mockito.mock(CloseableHttpResponse.class);
-        Mockito.when(responsePut.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NO_CONTENT, "test reason"));
-     
-       
-        HttpEntity entityPut = Mockito.mock(HttpEntity.class);
-        responsePut.setEntity(entityPut );
-        Mockito.when(this.restClient.put(Matchers.anyString(), Matchers.anyString(), Matchers.anyListOf(Header.class), Matchers.anyInt(), Matchers.anyInt()))
-        .thenReturn(responsePut);
-        
-        Asset model = new Asset();
-        model.setAdditionalAttributes(new Map());
-        model.setDescription("desc");
-        model.getAdditionalAttributes().put("anAttribute", attribute);
-        ArrayList<Model> models = new ArrayList<Model>();
-        models.add(model);
-        String bodyGet2 = this.jsonMapper.toJson(models);
-        //String bodyGet2 = "[{\"complexType\":\"Model\",\"additionalAttributes\":{\"keys\":[\"key\"],\"values\":[\"value\"]}}]";
-        //[{"complexType":"Asset","additionalAttributes":{"anAttribute":{"complexType":"Attribute","enumeration":[],"value":["value"]}},"description":"desc"}]
-      //  BasicStatusLine lineGet2 = new BasicStatusLine(protoGet, HttpStatus.SC_OK, "test reason for Get2");
-       // HttpResponse responseGet2 = new BasicHttpResponse(lineGet2);
-        
-        InputStream streamGet2 = new ByteArrayInputStream(bodyGet2.getBytes());
-        
-        CloseableHttpResponse responseGet2 = Mockito.mock(CloseableHttpResponse.class);
-        Mockito.when(responseGet2.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "test reason for Get2"));
-        
-      
-        HttpEntity entityGet2 = Mockito.mock(HttpEntity.class);
-        responseGet2.setEntity(entityGet2 );    
-        Mockito.when(entityGet2.getContent()).thenReturn(streamGet2);
-        Mockito.when(entityGet2.getContentLength()).thenReturn(new Long(bodyGet2.length()));
-        
-        Answer<?> answerGet = new Answer<Object>() {
-            private int count = 1;
+		Mockito.when(this.assetClient.create(assets, headers)).thenReturn(this.response);
+		Mockito.when(this.restClient.hasToken(Matchers.anyListOf(Header.class))).thenReturn(true);
+		Mockito.when(this.restClient.hasZoneId(Matchers.anyListOf(Header.class))).thenReturn(true);
 
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                if (this.count++ == 1)
-                    return responseGet;
+		/*
+		 * ProtocolVersion protoGet = new ProtocolVersion("HTTP", 1, 1);
+		 * BasicStatusLine lineGet = new BasicStatusLine(protoGet,
+		 * HttpStatus.SC_OK, "test reason for Get"); HttpResponse responseGet =
+		 * new BasicHttpResponse(lineGet);
+		 */
+		CloseableHttpResponse responseGet = Mockito.mock(CloseableHttpResponse.class);
+		Mockito.when(responseGet.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
+				HttpStatus.SC_OK, "test reason testNoModelForPostOnPolymporphicClassThatExists"));
 
-                return responseGet2;
-            }
-        };
-        Mockito.when(this.restClient.get(Matchers.anyString(), Matchers.anyListOf(Header.class), Matchers.anyInt(), Matchers.anyInt()))
-        .thenAnswer(answerGet);       
-        //make the call
-        
-        Mockito.when(responseGet.getEntity()).thenReturn(entityGet);
-        Mockito.when(responseGet2.getEntity()).thenReturn(entityGet2);
-        putFieldData(solutionId, fieldId, fieldName, fieldSource, rawDataValue, assetId, now, log,
-                HTTP_PAYLOAD_JSON, CONTAINER_SERVER_PORT);
+		HttpEntity entityGet = Mockito.mock(HttpEntity.class);
+		responseGet.setEntity(entityGet);
+		String bodyGet = "[]";
+		InputStream streamGet = new ByteArrayInputStream(bodyGet.getBytes());
+		Mockito.when(entityGet.getContent()).thenReturn(streamGet);
+		Mockito.when(entityGet.getContentLength()).thenReturn(new Long(bodyGet.length()));
 
-    }
+		/*
+		 * ProtocolVersion protoPut = new ProtocolVersion("HTTP", 1, 1);
+		 * BasicStatusLine linePut = new BasicStatusLine(protoPut,
+		 * HttpStatus.SC_NO_CONTENT, "test reason"); HttpResponse responsePut =
+		 * new BasicHttpResponse(linePut);
+		 */
 
-    
+		@SuppressWarnings("resource")
+		CloseableHttpResponse responsePut = Mockito.mock(CloseableHttpResponse.class);
+		Mockito.when(responsePut.getStatusLine()).thenReturn(
+				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_NO_CONTENT, "test reason"));
+
+		HttpEntity entityPut = Mockito.mock(HttpEntity.class);
+		responsePut.setEntity(entityPut);
+		Mockito.when(this.restClient.put(Matchers.anyString(), Matchers.anyString(), Matchers.anyListOf(Header.class),
+				Matchers.anyInt(), Matchers.anyInt())).thenReturn(responsePut);
+
+		Asset model = new Asset();
+		model.setAdditionalAttributes(new Map());
+		model.setDescription("desc");
+		model.getAdditionalAttributes().put("anAttribute", attribute);
+		ArrayList<Model> models = new ArrayList<Model>();
+		models.add(model);
+		String bodyGet2 = this.jsonMapper.toJson(models);
+		// String bodyGet2 =
+		// "[{\"complexType\":\"Model\",\"additionalAttributes\":{\"keys\":[\"key\"],\"values\":[\"value\"]}}]";
+		// [{"complexType":"Asset","additionalAttributes":{"anAttribute":{"complexType":"Attribute","enumeration":[],"value":["value"]}},"description":"desc"}]
+		// BasicStatusLine lineGet2 = new BasicStatusLine(protoGet,
+		// HttpStatus.SC_OK, "test reason for Get2");
+		// HttpResponse responseGet2 = new BasicHttpResponse(lineGet2);
+
+		InputStream streamGet2 = new ByteArrayInputStream(bodyGet2.getBytes());
+
+		CloseableHttpResponse responseGet2 = Mockito.mock(CloseableHttpResponse.class);
+		Mockito.when(responseGet2.getStatusLine()).thenReturn(
+				new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "test reason for Get2"));
+
+		HttpEntity entityGet2 = Mockito.mock(HttpEntity.class);
+		responseGet2.setEntity(entityGet2);
+		Mockito.when(entityGet2.getContent()).thenReturn(streamGet2);
+		Mockito.when(entityGet2.getContentLength()).thenReturn(new Long(bodyGet2.length()));
+
+		Answer<?> answerGet = new Answer<Object>() {
+			private int count = 1;
+
+			@Override
+			public Object answer(InvocationOnMock invocation) {
+				if (this.count++ == 1)
+					return responseGet;
+
+				return responseGet2;
+			}
+		};
+		Mockito.when(this.restClient.get(Matchers.anyString(), Matchers.anyListOf(Header.class), Matchers.anyInt(),
+				Matchers.anyInt())).thenAnswer(answerGet);
+		// make the call
+
+		Mockito.when(responseGet.getEntity()).thenReturn(entityGet);
+		Mockito.when(responseGet2.getEntity()).thenReturn(entityGet2);
+		putFieldData(solutionId, fieldId, fieldName, fieldSource, rawDataValue, assetId, now, log, HTTP_PAYLOAD_JSON,
+				CONTAINER_SERVER_PORT);
+
+	}
 
 }

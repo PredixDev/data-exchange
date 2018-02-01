@@ -13,6 +13,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
@@ -26,17 +27,19 @@ import com.ge.predix.solsvc.fdh.router.boot.FdhRouterApplication;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = FdhRouterApplication.class)
 @WebAppConfiguration
-@IntegrationTest({"server.port=9092"})
+@IntegrationTest({ "server.port=9092" })
+@ActiveProfiles({ "asset" })
 public class HelloControllerIT {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-    @Value("${local.server.port}")
-    private int localServerPort;
+
+	@Value("${local.server.port}")
+	private int localServerPort;
 
 	private URL base;
 	private RestTemplate template;
 
 	/**
-	 * @throws Exception -
+	 * @throws Exception
+	 *             -
 	 */
 	@Before
 	public void setUp() throws Exception {
@@ -44,16 +47,16 @@ public class HelloControllerIT {
 	}
 
 	/**
-	 * @throws Exception -
+	 * @throws Exception
+	 *             -
 	 */
 	@SuppressWarnings("nls")
-    @Test
+	@Test
 	public void getHealth() throws Exception {
 		this.base = new URL("http://localhost:" + this.localServerPort + "/services/health");
 		ResponseEntity<String> response = this.template.getForEntity(this.base.toString(), String.class);
 		assertThat(response.getBody(), startsWith("{\"status\":\"up\""));
-		
+
 	}
-	
-	
+
 }

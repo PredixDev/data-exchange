@@ -7,7 +7,16 @@ import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
+/**
+ * 
+ * @author 212546387 -
+ */
 public class DataExchangeUtil {
+	/**
+	 * @param context -
+	 * @param headersToKeep -
+	 * @return -
+	 */
 	public static List<Header> getRequestHeadersToKeep(MessageContext context, List<String> headersToKeep) {
 		List<Header> headers = new ArrayList<Header>();
 		for (String key : context.getHttpHeaders().getRequestHeaders().keySet()) {
@@ -16,4 +25,8 @@ public class DataExchangeUtil {
 		}
 		return headers;
 	}
+	
+ 	
+ 	
+ 	
 }

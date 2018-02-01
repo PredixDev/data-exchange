@@ -1,0 +1,11 @@
+---
+US_WEST:
+  EVENT_HUB_HOST : event-hub-aws-euc01.data-services.predix.io
+  UAA_SERVICE_HOST: predix-uaa.run.aws-eu-central-1-pr.ice.predix.io
+  ASSET_SERVICE_HOST: predix-asset.run.aws-usw02-pr.ice.predix.io
+  
+  
+FRANKFURT:
+  EVENT_HUB_HOST : event-hub-aws-euc01.data-services.predix.io
+  UAA_SERVICE_HOST: predix-uaa.run.aws-eu-central-1-pr.ice.predix.io
+  ASSET_SERVICE_HOST: predix-asset.run.aws-usw02-pr.ice.predix.io
