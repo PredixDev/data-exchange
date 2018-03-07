@@ -29,7 +29,6 @@ public interface DataExchange {
 
     /**
      * Rest implementation for the service to act as a GET heart beat: /heartbeat
-     * @param id - the id to reflect back
      * 
      *
      * @return the Response
@@ -69,7 +68,6 @@ public interface DataExchange {
     /**
 	 * @param context -
      * @param body -
-	 * @param request -
 	 * @return -
 	 */
     @POST

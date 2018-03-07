@@ -77,9 +77,6 @@ public class DXEventHubSubscriber {
 			this.synchClient.subscribe(this.callback);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Exception when initiating conenction to eventhub", e); //$NON-NLS-1$
-		} catch (EventHubClientException e) {
-			throw new RuntimeException("Exception when initiating conenction to eventhub", e); //$NON-NLS-1$
-
 		}
 	}
 
