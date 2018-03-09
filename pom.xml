@@ -5,7 +5,7 @@
 
 	<groupId>com.ge.predix.solsvc</groupId>
 	<artifactId>data-exchange</artifactId>
-	<version>2.0.65</version>
+	<version>2.0.66</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,13 +16,13 @@
 	</parent>
 
 	<properties>
-		<data-exchange-client.version>2.0.56</data-exchange-client.version>
-		<fdh-asset-handler.version>2.0.56</fdh-asset-handler.version>
-		<fdh-rabbitmq-handler.version>2.0.56</fdh-rabbitmq-handler.version>
-		<fdh-timeseries-handler.version>2.0.56</fdh-timeseries-handler.version>
-		<fdh-eventhub-handler.version>2.0.56</fdh-eventhub-handler.version>
-		<fdh-websocket-handler.version>2.0.56</fdh-websocket-handler.version>
-		<fdh-custom-handler.version>2.0.56</fdh-custom-handler.version>
+		<data-exchange-client.version>2.0.57</data-exchange-client.version>
+		<fdh-asset-handler.version>2.0.57</fdh-asset-handler.version>
+		<fdh-rabbitmq-handler.version>2.0.57</fdh-rabbitmq-handler.version>
+		<fdh-timeseries-handler.version>2.0.57</fdh-timeseries-handler.version>
+		<fdh-eventhub-handler.version>2.0.57</fdh-eventhub-handler.version>
+		<fdh-websocket-handler.version>2.0.57</fdh-websocket-handler.version>
+		<fdh-custom-handler.version>2.0.57</fdh-custom-handler.version>
 
 		<jettison.version>1.1</jettison.version>
 		<cxf.version>3.1.7</cxf.version>
