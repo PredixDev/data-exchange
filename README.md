@@ -47,8 +47,6 @@ Any service, such as [rmd-analytics](https://github.com/predixdev/rmd-analytics)
 
 - Data Exchange supports getting subresources.  Using XPATH, JSON Path or other techniques as specific field or sub-object from a larger structure can be retrieved.  E.g. in a JSON Asset model structure, you might want to retrieve just the Temperature Tag object.  Or the High Alarm Threshold from the Temperature Tag object.
 
-- An unimplemented, but coming soon feature is data targeting.  In one request you can get data from a data source and target the result to another.  E.g. you could make a SQL query to Postgres and store the result in a csv file in Blobstore.
-
 ## When do I need Data Exchange?
 
 - I need to get data from multiple data sources with a single call
