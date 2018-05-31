@@ -29,7 +29,9 @@ import com.ge.predix.entity.timeseries.datapoints.ingestionrequest.DatapointsIng
 import com.ge.predix.entity.timeseries.datapoints.queryrequest.DatapointsQuery;
 import com.ge.predix.entity.timeseries.datapoints.queryrequest.Tag;
 import com.ge.predix.entity.timeseriesfilter.TimeseriesFilter;
+import com.ge.predix.entity.util.map.Map;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
+import com.ge.predix.solsvc.timeseries.bootstrap.client.TimeseriesClient;
 
 /**
  * 
@@ -52,13 +54,18 @@ public class TestData {
 	 *            -
 	 * @param endTime
 	 *            -
+	 * @param timeseriesClient
+	 *            -
 	 * @return -
 	 */
-	@SuppressWarnings("nls")
+	@SuppressWarnings({ "nls", "unchecked" })
 	public static GetFieldDataRequest getFieldDataRequest(String field, String fieldSource, String expectedDataType,
-			Object uriField, Object uriFieldValue, Object startTime, Object endTime) {
+			Object uriField, Object uriFieldValue, Object startTime, Object endTime,
+			TimeseriesClient timeseriesClient) {
 		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
 		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+		fieldDataCriteria.setHeaders(new Map());
+		fieldDataCriteria.getHeaders().put("Predix-Zone-Id", timeseriesClient.getTimeseriesConfig().getZoneId());
 
 		TimeseriesFilter tsFilter = new TimeseriesFilter();
 		FieldSelection fieldSelection = new FieldSelection();
@@ -364,11 +371,16 @@ public class TestData {
 	 * 
 	 * @param dataexUri
 	 *            -
+	 * @param timeseriesClient - 
 	 * @return -
 	 */
-	public static GetFieldDataRequest getDataExchangeMetaDataRequest(String dataexUri) {
+	@SuppressWarnings("unchecked")
+	public static GetFieldDataRequest getDataExchangeMetaDataRequest(String dataexUri, TimeseriesClient timeseriesClient) {
 		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
 		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+		fieldDataCriteria.setHeaders(new Map());
+		fieldDataCriteria.getHeaders().put("Predix-Zone-Id", timeseriesClient.getTimeseriesConfig().getZoneId());
+
 		List<FieldSelection> fieldSelections = new ArrayList<FieldSelection>();
 		FieldSelection fieldSelection = new FieldSelection();
 		AssetFilter assetFilter = new AssetFilter();
@@ -397,13 +409,17 @@ public class TestData {
 	 *            -
 	 * @param expectedDataType
 	 *            -
+	 * @param timeseriesClient - 
 	 * @return -
 	 */
+	@SuppressWarnings({ "nls", "unchecked" })
 	public static GetFieldDataRequest createGetAssetRequest(String assetUri, String selection,
-			String expectedDataType) {
+			String expectedDataType, TimeseriesClient timeseriesClient) {
 		GetFieldDataRequest getFieldDataRequest = new GetFieldDataRequest();
 
 		FieldDataCriteria fieldDataCriteria = new FieldDataCriteria();
+		fieldDataCriteria.setHeaders(new Map());
+		fieldDataCriteria.getHeaders().put("Predix-Zone-Id", timeseriesClient.getTimeseriesConfig().getZoneId());
 
 		// SELECT
 		FieldSelection fieldSelection = new FieldSelection();
@@ -428,11 +444,16 @@ public class TestData {
 	}
 
 	/**
-	 * @param assetId -
-	 * @param nodeName -
-	 * @param lowerThreshold -
-	 * @param upperThreshold -
-	 * @param jsonMapper -
+	 * @param assetId
+	 *            -
+	 * @param nodeName
+	 *            -
+	 * @param lowerThreshold
+	 *            -
+	 * @param upperThreshold
+	 *            -
+	 * @param jsonMapper
+	 *            -
 	 * @return -
 	 */
 	public static PutFieldDataRequest putFieldDataRequestEventHub(String assetId, String nodeName,

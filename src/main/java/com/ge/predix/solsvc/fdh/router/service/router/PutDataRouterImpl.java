@@ -38,6 +38,7 @@ import com.ge.predix.entity.putfielddata.PutFieldDataCriteria;
 import com.ge.predix.entity.putfielddata.PutFieldDataRequest;
 import com.ge.predix.entity.putfielddata.PutFieldDataResult;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
+import com.ge.predix.solsvc.fdh.handler.FDHUtil;
 import com.ge.predix.solsvc.fdh.handler.PutDataHandler;
 import com.ge.predix.solsvc.fdh.router.boot.FdhRouterApplication;
 import com.ge.predix.solsvc.fdh.router.validator.RouterPutDataCriteriaValidator;
@@ -56,18 +57,17 @@ public class PutDataRouterImpl implements PutRouter, ApplicationContextAware {
 	private RouterPutDataValidator validator;
 
 	@Autowired
-    private RouterPutDataCriteriaValidator criteriaValidator;
+	private RouterPutDataCriteriaValidator criteriaValidator;
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Autowired
-    private RestClient restClient;
-    
-    @Autowired
-    private JsonMapper mapper;
-   
-	
+	private RestClient restClient;
+
+	@Autowired
+	private JsonMapper mapper;
+
 	/**
 	 * @param request
 	 *            -
@@ -79,37 +79,43 @@ public class PutDataRouterImpl implements PutRouter, ApplicationContextAware {
 	@SuppressWarnings({ "nls" })
 	public PutFieldDataResult putData(PutFieldDataRequest request, Map<Integer, Object> modelLookupMap,
 			List<Header> headers) {
-	    
+
 		FdhRouterApplication.printMemory();
-	    this.validator.validate(request);
+		this.validator.validate(request);
 		PutFieldDataResult fullResult = new PutFieldDataResult();
-		for (PutFieldDataCriteria fieldDataCriteria : request.getPutFieldDataCriteria()) {
-			for (Field field : fieldDataCriteria.getFieldData().getField()) {
+		for (PutFieldDataCriteria criteria : request.getPutFieldDataCriteria()) {
+			for (Field field : criteria.getFieldData().getField()) {
+			    log.info("Source : "+field.getFieldIdentifier().getSource());
 				try {
-					if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_ASSET.name())) {
-						this.getCriteriaValidator().validatePutFieldDataCriteria(fieldDataCriteria);
+					if (field.getFieldIdentifier().getSource() != null
+							&& field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_ASSET.name())) {
+						this.getCriteriaValidator().validatePutFieldDataCriteria(criteria);
 						field.getFieldIdentifier().setSource("handler/assetPutFieldDataHandler");
-						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
+						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
 						field.getFieldIdentifier().setSource(FieldSourceEnum.PREDIX_ASSET.name());
 					} else if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_TIMESERIES.name())) {
 					    field.getFieldIdentifier().setSource("handler/timeseriesPutFieldDataHandler");
-					 	processSingleCustomHandler(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
-					} else if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.RABBITMQ_QUEUE.name())) {
+					 	processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
+					} else if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_EVENT_HUB.name())) {
+                        field.getFieldIdentifier().setSource("handler/eventhubGRPCPutFieldDataHandler");
+                        processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
+                    } else if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.RABBITMQ_QUEUE.name())) {
                     	field.getFieldIdentifier().setSource("handler/rabbitMQPutFieldDataHandler");
-						this.getCriteriaValidator().validatePutFieldDataCriteria(fieldDataCriteria);
-						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
+						this.getCriteriaValidator().validatePutFieldDataCriteria(criteria);
+						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
 					} else if (field.getFieldIdentifier().getSource().contains("handler/")) {
-						this.getCriteriaValidator().validatePutFieldDataCriteria(fieldDataCriteria);
-						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
-					}else if (field.getFieldIdentifier().getSource().startsWith("http://")
+						this.getCriteriaValidator().validatePutFieldDataCriteria(criteria);
+						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
+					} else if (field.getFieldIdentifier().getSource().startsWith("http://")
 							|| field.getFieldIdentifier().getSource().startsWith("https://")) {
-					    
-						this.getCriteriaValidator().validatePutFieldDataCriteria(fieldDataCriteria);
-						processRESTRequest(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
-					}else if (field.getFieldIdentifier().getSource() != null && field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_BLOBSTORE.name())) {
-                    	field.getFieldIdentifier().setSource("handler/blobstorePutDataHandler");
-						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, fieldDataCriteria);
-					}else
+
+						this.getCriteriaValidator().validatePutFieldDataCriteria(criteria);
+						processRESTRequest(request, modelLookupMap, headers, fullResult, criteria);
+					} else if (field.getFieldIdentifier().getSource() != null
+							&& field.getFieldIdentifier().getSource().equals(FieldSourceEnum.PREDIX_BLOBSTORE.name())) {
+						field.getFieldIdentifier().setSource("handler/blobstorePutDataHandler");
+						processSingleCustomHandler(request, modelLookupMap, headers, fullResult, criteria);
+					} else
 						throw new UnsupportedOperationException(
 								"Source=" + field.getFieldIdentifier().getSource() + " not supported");
 				} catch (Throwable e) {
@@ -117,15 +123,14 @@ public class PutDataRouterImpl implements PutRouter, ApplicationContextAware {
 					// continue with the others. The caller should submit
 					// compensating transactions.
 					String fieldString = null;
-					if (fieldDataCriteria != null && fieldDataCriteria.getFieldData().getField() != null)
-						fieldString = fieldDataCriteria.getFieldData().getField().toString();
+					if (criteria != null && criteria.getFieldData().getField() != null)
+						fieldString = criteria.getFieldData().getField().toString();
 					Filter filter = null;
-					if (fieldDataCriteria != null && fieldDataCriteria.getFilter() != null)
-						filter = fieldDataCriteria.getFilter();
+					if (criteria != null && criteria.getFilter() != null)
+						filter = criteria.getFilter();
 					String msg = "unable to process request errorMsg=" + e.getMessage() + " request.correlationId="
-							+ request.getCorrelationId() 
-							+ " filter=" + filter + " for field=" + fieldString;
-					log.error(msg,e);
+							+ request.getCorrelationId() + " filter=" + filter + " for field=" + fieldString;
+					log.error(msg, e);
 					fullResult.getErrorEvent().add(msg);
 				}
 			}
@@ -134,84 +139,122 @@ public class PutDataRouterImpl implements PutRouter, ApplicationContextAware {
 		return fullResult;
 	}
 
-	
+	/**
+	 * Method to decorate the MetaData request to setup the asset Id and Asset
+	 * URL
+	 * 
+	 * @param request
+	 *            -
+	 */
+	private void decorateMetaDataRequest(PutFieldDataRequest putFieldDataRequest) {
+		List<PutFieldDataCriteria> fieldCriteriaList = putFieldDataRequest.getPutFieldDataCriteria();
+		for (PutFieldDataCriteria fieldDataCriteria : fieldCriteriaList) {
+			if (fieldDataCriteria == null) {
+				return;
+			}
+			for (@SuppressWarnings("unused")
+			Field field : fieldDataCriteria.getFieldData().getField()) {
+				if (fieldDataCriteria.getFilter() == null) {
+					Data data = fieldDataCriteria.getFieldData().getData();
+					if (data instanceof MetaData) {
+						((MetaData) data).setId(UUID.randomUUID().toString());
+						((MetaData) data).setUri("/data-exchange/" + ((MetaData) data).getId()); //$NON-NLS-1$
 
+					}
+				}
+			}
+		}
 
-    /**
-     * Method to decorate the MetaData request to setup the asset Id and Asset URL
-     * @param request -
-     */
-    private void decorateMetaDataRequest(PutFieldDataRequest putFieldDataRequest)
-    {
-        List<PutFieldDataCriteria> fieldCriteriaList = putFieldDataRequest.getPutFieldDataCriteria();
-        for (PutFieldDataCriteria fieldDataCriteria : fieldCriteriaList)
-        {
-            if ( fieldDataCriteria == null )
-            {
-                return;
-            }
-            for (@SuppressWarnings("unused") Field field : fieldDataCriteria.getFieldData().getField())
-            {
-                if ( fieldDataCriteria.getFilter() == null )
-                {
-                    Data data = fieldDataCriteria.getFieldData().getData();
-                    if ( data instanceof MetaData )
-                    {
-                       ((MetaData) data).setId(UUID.randomUUID().toString());
-                       ((MetaData) data).setUri("/data-exchange/"+((MetaData) data).getId()); //$NON-NLS-1$
-                        
-                    }
-                }
-            }
-        }
-        
-    }
+	}
 
-
-
-
-    /**
-	 * @param request -
-     * @param modelLookupMap -
-	 * @param headers -
-	 * @param fullResult -
-	 * @param fieldDataCriteria
+	/**
+	 * @param request
+	 *            -
+	 * @param modelLookupMap
+	 *            -
+	 * @param headers
+	 *            -
+	 * @param fullResult
+	 *            -
+	 * @param criteria
 	 *            -
 	 */
 	@SuppressWarnings("nls")
 	protected void processSingleCustomHandler(PutFieldDataRequest request, Map<Integer, Object> modelLookupMap,
-			List<Header> headers, PutFieldDataResult fullResult, PutFieldDataCriteria fieldDataCriteria) {
-		for (Field field : fieldDataCriteria.getFieldData().getField()) {
+			List<Header> headers, PutFieldDataResult fullResult, PutFieldDataCriteria criteria) {
 
-			PutFieldDataRequest singleRequest = makeSingleRequest(request, fieldDataCriteria);
+		List<Header> headersToUse = FDHUtil.copyHeaders(headers);
+		headersToUse = setOverrideHeaders(criteria, headersToUse);
 
+		for (Field field : criteria.getFieldData().getField()) {
+
+			PutFieldDataRequest singleRequest = makeSingleRequest(request, criteria);
 			String source = field.getFieldIdentifier().getSource();
 			String beanName = source.substring(source.indexOf("handler/") + 8);
 			beanName = beanName.substring(0, 1).toLowerCase() + beanName.substring(1);
 
 			PutDataHandler bean = (PutDataHandler) this.context.getBean(beanName);
-			if ( bean == null )
-			    throw new RuntimeException("bean=" + beanName + " not found in context.  Please check the profiles and classpath or correct the request.");
-			PutFieldDataResult singleResult = bean.putData(singleRequest, modelLookupMap, headers, HttpMethod.POST);
+			if (bean == null)
+				throw new RuntimeException("bean=" + beanName
+						+ " not found in context.  Please check the profiles and classpath or correct the request.");
+			PutFieldDataResult singleResult = bean.putData(singleRequest, modelLookupMap, headersToUse,
+					HttpMethod.POST);
 			if (singleResult.getErrorEvent() != null && singleResult.getErrorEvent().size() > 0)
 				fullResult.getErrorEvent().addAll(singleResult.getErrorEvent());
-			//return the results from the singleResultback to the object
+			// return the results from the singleResultback to the object
 			fullResult.setExternalAttributeMap(singleResult.getExternalAttributeMap());
 		}
 	}
 
+	/**
+	 * Mode 2: Supporting different ClientIds per DataSource in Data Exchange
+	 * (coming soon with APM release)
+	 * 
+	 * Constraints:
+	 * 
+	 * Data Sources typically have different ZoneIds. Data Sources might support
+	 * same ClientId or sometimes different ClientId. Data Sources might even
+	 * support a different UAA. Requests for multiple TenantIds will not be
+	 * supported. Thus, TenantId, Tokens and ZoneIds will be accepted in the
+	 * DataExchange API. ClientId and Secrets will not be accepted in API.
+	 * 
+	 * Require receiving Tenant Id in HTTP Header - pass Headers to SDKs, SDKs
+	 * send Headers in HTTP Request (TenantId not needed for Predix Time Series)
+	 * 
+	 * Support receiving Default Token in HTTP Header. If this token gets access
+	 * to all Data Sources, that is all that is needed.
+	 * 
+	 * Support receiving Default ZoneId in HTTP Header. If only one ZoneId is
+	 * needed for all Data Sources, that is all that is needed. If no VCAP
+	 * binding (Mode 1) is available, ZoneId is required.
+	 * 
+	 * Support receiving Override Token in the POST BODY - Put/Get Request
+	 * 
+	 * Support receiving Override ZoneId in the POST BODY - Put/Get Request. If
+	 * no VCAP binding (Mode 1) is available, ZoneId is required.
+	 * 
+	 * @param fieldDataCriteria
+	 * @param headers
+	 * @return -
+	 */
+	@SuppressWarnings("nls")
+	private List<Header> setOverrideHeaders(PutFieldDataCriteria criteria, List<Header> headers) {
+		FDHUtil.setHeader(headers, criteria.getHeaders(), "Predix-Zone-Id");
+		FDHUtil.setHeader(headers, criteria.getHeaders(), "Authorization");
+
+		return headers;
+	}
 
 	/**
 	 * @param request
 	 * @param fieldDataCriteria
 	 * @return
 	 */
-	private PutFieldDataRequest makeSingleRequest(PutFieldDataRequest request,
-			PutFieldDataCriteria putFieldDataCriteria) {
+	private PutFieldDataRequest makeSingleRequest(PutFieldDataRequest request, PutFieldDataCriteria criteria) {
 		PutFieldDataRequest singleRequest = new PutFieldDataRequest();
 		singleRequest.setCorrelationId(request.getCorrelationId());
 		singleRequest.setExternalAttributeMap(request.getExternalAttributeMap());
-		singleRequest.getPutFieldDataCriteria().add(putFieldDataCriteria);
+		singleRequest.getPutFieldDataCriteria().add(criteria);
 
 		return singleRequest;
 	}
@@ -247,44 +290,36 @@ public class PutDataRouterImpl implements PutRouter, ApplicationContextAware {
 
 	@SuppressWarnings("nls")
 	private void processRESTRequest(PutFieldDataRequest request, Map<Integer, Object> modelLookupMap,
-			List<Header> headers, PutFieldDataResult fullResult, PutFieldDataCriteria fieldDataCriteria)
-    {
+			List<Header> headers, PutFieldDataResult fullResult, PutFieldDataCriteria fieldDataCriteria) {
 		for (Field field : fieldDataCriteria.getFieldData().getField()) {
 			PutFieldDataRequest singleRequest = makeSingleRequest(request, fieldDataCriteria);
 			String url = field.getFieldIdentifier().getSource();
 			EntityBuilder builder = EntityBuilder.create();
-        	builder.setText(this.mapper.toJson(singleRequest));
-        	HttpEntity reqEntity = builder.build();
-        	try(CloseableHttpResponse response = this.restClient.post(url, reqEntity, null, 100, 1000);){
-        		String res = this.restClient.getResponse(response);
-        		PutFieldDataResult singleResult = this.mapper.fromJson(res, PutFieldDataResult.class);
-        		if (singleResult.getErrorEvent() != null && singleResult.getErrorEvent().size() > 0)
-    				fullResult.getErrorEvent().addAll(singleResult.getErrorEvent());
-	        } catch (IOException e) {
-	        	 throw new RuntimeException("Error when performing POST to Custom Rest Service : ",e);
-			}	
+			builder.setText(this.mapper.toJson(singleRequest));
+			HttpEntity reqEntity = builder.build();
+			try (CloseableHttpResponse response = this.restClient.post(url, reqEntity, headers, 100, 1000);) {
+				String res = this.restClient.getResponse(response);
+				PutFieldDataResult singleResult = this.mapper.fromJson(res, PutFieldDataResult.class);
+				if (singleResult.getErrorEvent() != null && singleResult.getErrorEvent().size() > 0)
+					fullResult.getErrorEvent().addAll(singleResult.getErrorEvent());
+			} catch (IOException e) {
+				throw new RuntimeException("Error when performing POST to Custom Rest Service : ", e);
+			}
 		}
-    }
+	}
 
+	/**
+	 * @return the criteriaValidator
+	 */
+	public RouterPutDataCriteriaValidator getCriteriaValidator() {
+		return this.criteriaValidator;
+	}
 
-
-
-    /**
-     * @return the criteriaValidator
-     */
-    public RouterPutDataCriteriaValidator getCriteriaValidator()
-    {
-        return this.criteriaValidator;
-    }
-
-
-
-
-    /**
-     * @param criteriaValidator the criteriaValidator to set
-     */
-    public void setCriteriaValidator(RouterPutDataCriteriaValidator criteriaValidator)
-    {
-        this.criteriaValidator = criteriaValidator;
-    }
+	/**
+	 * @param criteriaValidator
+	 *            the criteriaValidator to set
+	 */
+	public void setCriteriaValidator(RouterPutDataCriteriaValidator criteriaValidator) {
+		this.criteriaValidator = criteriaValidator;
+	}
 }

@@ -60,7 +60,7 @@ public class FdhRouterApplication extends PredixSpringBootInitializer {
 				FdhRouterApplication.class);
 		ApplicationContext ctx = springApplication.run(args);
 
-		log.debug("Let's inspect the beans provided by Spring Boot:"); //$NON-NLS-1$
+		log.info("Let's inspect the beans provided by Spring Boot:"); //$NON-NLS-1$
 
 		String[] beanNames = ctx.getBeanDefinitionNames();
 		Arrays.sort(beanNames);
@@ -82,7 +82,7 @@ public class FdhRouterApplication extends PredixSpringBootInitializer {
 			Object propertySourceObject = iterator.next();
 			if (propertySourceObject instanceof org.springframework.core.env.PropertySource) {
 				org.springframework.core.env.PropertySource<?> propertySource = (org.springframework.core.env.PropertySource<?>) propertySourceObject;
-				log.debug("propertySource=" + propertySource.getName() + " values=" + propertySource.getSource() //$NON-NLS-1$ //$NON-NLS-2$
+				log.info("propertySource=" + propertySource.getName() + " values=" + propertySource.getSource() //$NON-NLS-1$ //$NON-NLS-2$
 						+ "class=" + propertySource.getClass()); //$NON-NLS-1$
 			}
 		}
@@ -102,20 +102,22 @@ public class FdhRouterApplication extends PredixSpringBootInitializer {
 		Runtime runtime = Runtime.getRuntime();
 		int mb = 1024 * 1024;
 
-		log.debug("##### Heap utilization statistics [MB] #####");
+		log.info("##### Heap utilization statistics [MB] #####");
 
 		// Print used memory
-		log.debug("Used Memory:"
+		log.info("Used Memory:"
 				+ (runtime.totalMemory() - runtime.freeMemory()) / mb);
 
 		// Print free memory
-		log.debug("Free Memory:" + runtime.freeMemory() / mb);
+		log.info("Free Memory:" + runtime.freeMemory() / mb);
 
 		// Print total available memory
-		log.debug("Total Memory:" + runtime.totalMemory() / mb);
+		log.info("Total Memory:" + runtime.totalMemory() / mb);
 
 		// Print Maximum available memory
-		log.debug("Max Memory:" + runtime.maxMemory() / mb);
+		log.info("Max Memory:" + runtime.maxMemory() / mb);
+		
+		//log.info("VCAP_SERVICES"+System.getenv("VCAP_SERVICES"));
 	}
 
 	/**

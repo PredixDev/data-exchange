@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -60,8 +59,6 @@ public class DXEventHubSubscriber {
 	@Autowired
 	private DXEventHubSubscriberConfig dxEventHubSubscriberConfig;
 
-	@Autowired
-	private ThreadPoolTaskExecutor taskExecutor;
 	
 	private SubscribeCallback callback = new SubscribeCallback();
 	
@@ -71,23 +68,15 @@ public class DXEventHubSubscriber {
 	@PostConstruct
 	public void init() {
 		try {
-			this.taskExecutor.setCorePoolSize(5);
-			this.taskExecutor.setMaxPoolSize(10);
-			createClient();
+		   createClient();
 			this.synchClient.subscribe(this.callback);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException | EventHubClientException e) {
 			throw new RuntimeException("Exception when initiating conenction to eventhub", e); //$NON-NLS-1$
 		}
 	}
 
-	/**
-	 *  -
-	 */
-	@Scheduled(fixedRate=10000L)
-	public void processMessage() {
-		DXEventHubSubscriberProcessor processor = new DXEventHubSubscriberProcessor(this.callback.getMessage());
-		this.taskExecutor.execute(processor);
-	}
+	
+	    
 	/**
 	 * @throws UnsupportedEncodingException -
 	 */
@@ -95,29 +84,17 @@ public class DXEventHubSubscriber {
 		// make the async and sync clients
 		try {
 			String[] client = this.dxEventHubSubscriberConfig.getOauthClientId().split(":"); //$NON-NLS-1$
-			EventHubConfiguration eventHubConfiguration = null;
 			SubscribeConfiguration.Builder subscribeConfigBuilder = new SubscribeConfiguration.Builder();
 			if (this.dxEventHubSubscriberConfig.getSubscribeTopic() != null
 					&& !"".equals(this.dxEventHubSubscriberConfig.getSubscribeTopic())) { //$NON-NLS-1$
-				//subscribeConfigBuilder.topic(this.eventHubConfig.getSubscribeTopic());
+				subscribeConfigBuilder.topic(this.dxEventHubSubscriberConfig.getSubscribeTopic());
 			}
-			//if ((this.eventHubConfig.getEventHubServiceName() != null && !"".equals(this.eventHubConfig.getEventHubServiceName())
-					//|| (this.eventHubConfig.getEventHubUAAServiceName() != null
-					//		&& !"".equals(this.eventHubConfig.getEventHubUAAServiceName())))) {
-				eventHubConfiguration = new EventHubConfiguration.Builder()
-						.fromEnvironmentVariables(this.dxEventHubSubscriberConfig.getEventHubServiceName(),
-								this.dxEventHubSubscriberConfig.getEventHubUAAServiceName())
-						.clientID(client[0]).clientSecret(client[1])
-						.subscribeConfiguration(subscribeConfigBuilder.build()).automaticTokenRenew(true).build();
-			/*} else {
-				eventHubConfiguration = new EventHubConfiguration.Builder().host(this.eventHubConfig.getEventHubHostName())
-						.clientID(client[0]).clientSecret(client[1]).zoneID(this.eventHubConfig.getEventHubZoneId())
-						.authURL(this.eventHubConfig.getOauthIssuerId())
-						.subscribeConfiguration(subscribeConfigBuilder.build()).automaticTokenRenew(true).build();
-			}*/
-
+			EventHubConfiguration eventHubConfiguration = new EventHubConfiguration.Builder().authURL(this.dxEventHubSubscriberConfig.getOauthIssuerId())
+				        .zoneID(this.dxEventHubSubscriberConfig.getEventHubZoneId())
+				        .host(this.dxEventHubSubscriberConfig.getEventHubHostName())
+                        .clientID(client[0]).clientSecret(client[1])
+                        .subscribeConfiguration(subscribeConfigBuilder.build()).automaticTokenRenew(true).build();
 			this.synchClient = new Client(eventHubConfiguration);
-
 		} catch (EventHubClientException.InvalidConfigurationException e) {
 			log.error("*** Could not make client ***", e); //$NON-NLS-1$
 			throw new RuntimeException("Could not make event hub client"); //$NON-NLS-1$
@@ -133,6 +110,16 @@ public class DXEventHubSubscriber {
 		private AtomicInteger errorCount = new AtomicInteger();
 		private CountDownLatch finishLatch = new CountDownLatch(0);
 
+		 private ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+         /**
+         *  -
+         */
+        public SubscribeCallback()
+        {
+            this.taskExecutor.setCorePoolSize(5);
+            this.taskExecutor.setMaxPoolSize(10);
+        }
+		
 		/**
 		 * @param count -
 		 */
@@ -167,7 +154,10 @@ public class DXEventHubSubscriber {
 			// message.toString()+"\n");
 			// System.out.println(String.format("%s::message::%s::%s", name,
 			// message.getId(), message.getBody().toStringUtf8()));
-			this.messages.add(message);
+			//this.messages.add(message);
+		        DXEventHubSubscriberProcessor processor = new DXEventHubSubscriberProcessor(message);
+                this.taskExecutor.execute(processor);
+            
 			if (this.finishLatch.getCount() != 0) {
 				this.finishLatch.countDown();
 			}

@@ -12,6 +12,7 @@
         com.ge.predix.solsvc.fdh.endpoints,
         com.ge.predix.solsvc.fdh.router.spi,
         com.ge.predix.solsvc.fdh.router.config,
+        com.ge.predix.solsvc.fdh.router.service.router,
 		com.ge.predix.solsvc.fdh.router.service.cxf
 		com.ge.predix.solsvc.fdh.router.service.spring
 		com.ge.predix.solsvc.fdh.router.service

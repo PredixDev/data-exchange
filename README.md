@@ -47,6 +47,7 @@ Any service, such as [rmd-analytics](https://github.com/predixdev/rmd-analytics)
 
 - Data Exchange supports getting subresources.  Using XPATH, JSON Path or other techniques as specific field or sub-object from a larger structure can be retrieved.  E.g. in a JSON Asset model structure, you might want to retrieve just the Temperature Tag object.  Or the High Alarm Threshold from the Temperature Tag object.
 
+
 ## When do I need Data Exchange?
 
 - I need to get data from multiple data sources with a single call
@@ -245,6 +246,32 @@ We also wrap the OSACBM (Open Standards Association for Condition Based Maintena
 
 <img height=300 src="images/DataExchange-OsacbmDataTypes.png">
 
+## TenantId, ZoneId, and Token Handling
+Let's look at Data Exchange from the perspective of talking to several endpoints.
+
+Mode 1: Binding to a UAA, Time Series, Asset etc (existing capability)
+
+- Require receiving Tenant Id in HTTP Header - pass Headers to SDKs, SDKs send Headers in HTTP Request 
+    - (TenantId not needed for Predix Time Series)
+- If no Token or ZoneId are provided in HTTP Request (see Mode 2), SDK should generate a Token using the cloud foundry VCAP binding info.
+
+Mode 2: Supporting different ClientIds per DataSource in Data Exchange (coming soon with APM release)
+
+Constraints:
+
+- Data Sources typically have different ZoneIds.  
+- Data Sources might support same ClientId or sometimes different ClientId.  
+- Data Sources might even support a different UAA.  
+- Requests for multiple TenantIds will not be supported.
+
+Thus, TenantId, Tokens and ZoneIds will be accepted in the DataExchange API.  ClientId and Secrets will not be accepted in API.
+
+- Require receiving Tenant Id in HTTP Header - pass Headers to SDKs, SDKs send Headers in HTTP Request 
+    - (TenantId not needed for Predix Time Series)
+- Support receiving Default Token in HTTP Header.  If this token gets access to all Data Sources, that is all that is needed.
+- Support receiving Default ZoneId in HTTP Header.  If only one ZoneId is needed for all Data Sources, that is all that is needed.  If no VCAP binding (Mode 1) is available, ZoneId is required.
+- Support receiving Override Token in the POST BODY - Put/Get Request
+- Support receiving Override ZoneId in the POST BODY - Put/Get Request.  If no VCAP binding (Mode 1) is available, ZoneId is required.
 
 ## Summary
 

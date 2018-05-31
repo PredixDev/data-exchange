@@ -1,5 +1,6 @@
 package com.ge.predix.solsvc.fdh.router.config;
 
+import javax.servlet.ServletContext;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
@@ -11,14 +12,16 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+
+import com.ge.predix.solsvc.fdh.router.service.router.DXWebSocketServerEndPoint;
 
 /**
  * 
  * @author predix.adoption@ge.com -
  */
 @Configuration
-@Profile("dxwebsocket")
 public class DXWebSocketServerConfig extends ServerEndpointConfig.Configurator implements ApplicationContextAware{
 	@Value("${predix.dataexchange.default.fieldsource:PREDIX_EVENT_HUB}")
     private String                 defaultFieldSource;
@@ -51,11 +54,33 @@ public class DXWebSocketServerConfig extends ServerEndpointConfig.Configurator i
     /**
      * @return -
      */
+    @Profile("cloud")
     @Bean       
     public ServerEndpointExporter serverEndpointExporter() {        
           return new ServerEndpointExporter();        
     }
 
+    /**
+     * @param applicationContext - 
+     * @return -
+     */
+    @Profile("local")
+    @Bean
+    public ServletContextAware endpointExporterInitializer(final ApplicationContext applicationContext) {
+        return new ServletContextAware() {
+
+            @Override
+            public void setServletContext(ServletContext servletContext) {
+                ServerEndpointExporter serverEndpointExporter = new ServerEndpointExporter();
+                    serverEndpointExporter.setApplicationContext(applicationContext);
+                try {
+                    serverEndpointExporter.afterPropertiesSet();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }               
+            }           
+        };
+    }
 	/**
 	 * @return -
 	 */
@@ -69,4 +94,12 @@ public class DXWebSocketServerConfig extends ServerEndpointConfig.Configurator i
 	public void setDefaultFieldSource(String defaultFieldSource) {
 		this.defaultFieldSource = defaultFieldSource;
 	}
+	
+	/**
+	 * @return -
+	 */
+	@Bean
+    public DXWebSocketServerEndPoint dXWebSocketServerEndPoint() {
+        return new DXWebSocketServerEndPoint();
+    }
 }
