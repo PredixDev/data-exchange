@@ -41,7 +41,7 @@ import com.ge.predix.solsvc.restclient.impl.RestClient;
  * 
  * @author predix
  */
-@Component(value = "metaDataputFieldDataService")
+@Component(value = "metaDataPutFieldDataService")
 public class MetaDataPutDataRouterImpl extends PutDataRouterImpl
 {
     private static final Logger            log = LoggerFactory.getLogger(MetaDataPutDataRouterImpl.class);

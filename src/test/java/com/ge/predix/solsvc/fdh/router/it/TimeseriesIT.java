@@ -31,18 +31,19 @@ import com.ge.predix.entity.timeseries.datapoints.queryresponse.DatapointsRespon
 import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.asset.AssetGetFieldDataHandlerImpl;
 import com.ge.predix.solsvc.fdh.handler.timeseries.TimeseriesGetDataHandler;
-import com.ge.predix.solsvc.fdh.router.boot.FdhRouterApplication;
+import com.ge.predix.solsvc.fdh.router.boot.DataExchangeRouterApplication;
 import com.ge.predix.solsvc.fdh.router.service.router.GetRouter;
 import com.ge.predix.solsvc.fdh.router.util.TestData;
 import com.ge.predix.solsvc.restclient.config.IOauthRestConfig;
 import com.ge.predix.solsvc.restclient.impl.RestClient;
+import com.ge.predix.solsvc.timeseries.bootstrap.client.TimeseriesClient;
 
 /**
  * 
  * @author predix
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { FdhRouterApplication.class, AssetGetFieldDataHandlerImpl.class,
+@SpringApplicationConfiguration(classes = { DataExchangeRouterApplication.class, AssetGetFieldDataHandlerImpl.class,
 		TimeseriesGetDataHandler.class, GetRouter.class })
 @WebAppConfiguration
 @IntegrationTest({ "server.port=9092" })
@@ -51,8 +52,11 @@ public class TimeseriesIT {
 
 	private static final Logger log = LoggerFactory.getLogger(TimeseriesIT.class);
 
-	@Autowired
-	private RestClient restClient;
+    @Autowired
+    private TimeseriesClient timeseriesClient;
+    
+    @Autowired
+    private RestClient restClient;
 
 	@Autowired
 	private JsonMapper jsonMapper;
@@ -117,9 +121,8 @@ public class TimeseriesIT {
 		String url = "http://localhost:" + "9092" + "/services/fdhrouter/fielddatahandler/putfielddata";
 		log.debug("URL = " + url);
 	
-		List<Header> headers = new ArrayList<Header>();
+		List<Header> headers = this.timeseriesClient.getTimeseriesHeaders();
 		headers.add(new BasicHeader("Content-Type", "application/json"));
-		this.restClient.addSecureTokenForHeaders(headers);
 		log.debug("REQUEST: Input json to get field data = " + this.jsonMapper.toJson(request));
 	
 		CloseableHttpResponse response = null;
@@ -175,9 +178,9 @@ public class TimeseriesIT {
 				+ "/services/fdhrouter/fielddatahandler/getfielddata"; //$NON-NLS-1$
 		log.debug("URL = " + url); //$NON-NLS-1$
 
-		List<Header> headers = new ArrayList<Header>();
+		List<Header> headers = this.timeseriesClient.getTimeseriesHeaders();
 		headers.add(new BasicHeader("Content-Type", "application/json")); //$NON-NLS-1$ //$NON-NLS-2$
-		this.restClient.addSecureTokenForHeaders(headers);
+		this.timeseriesClient.addSecureTokenToHeaders(headers);
 
 		CloseableHttpResponse response = null;
 		try {

@@ -45,7 +45,7 @@ import com.ge.predix.entity.putfielddata.PutFieldDataRequest;
 import com.ge.predix.entity.putfielddata.PutFieldDataResult;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.asset.AssetGetFieldDataHandlerImpl;
-import com.ge.predix.solsvc.fdh.router.boot.FdhRouterApplication;
+import com.ge.predix.solsvc.fdh.router.boot.DataExchangeRouterApplication;
 import com.ge.predix.solsvc.fdh.router.util.TestData;
 import com.ge.predix.solsvc.restclient.config.IOauthRestConfig;
 import com.ge.predix.solsvc.restclient.impl.RestClient;
@@ -57,7 +57,7 @@ import com.ge.predix.solsvc.restclient.impl.RestClient;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes =
 {
-        FdhRouterApplication.class, AssetGetFieldDataHandlerImpl.class
+        DataExchangeRouterApplication.class, AssetGetFieldDataHandlerImpl.class
 })
 @WebAppConfiguration
 @IntegrationTest(

@@ -79,7 +79,7 @@ public class DataExchangeRouterController
     private GetRouter    getRouter;
 
     @Autowired
-    private PutRouter    metaDataputFieldDataService;
+    private PutRouter    metaDataPutFieldDataService;
 
     @Autowired
     private IServiceManagerService serviceManagerService;
@@ -138,7 +138,7 @@ public class DataExchangeRouterController
             List<Header> headers = DataExchangeUtil.getRequestHeadersToKeep(context, headersToKeep);
 
             Map<Integer, Object> modelLookupMap = new HashMap<Integer, Object>();
-            PutFieldDataResult putFieldDataResult = this.metaDataputFieldDataService.putData(putFieldDataRequest, modelLookupMap , headers);
+            PutFieldDataResult putFieldDataResult = this.metaDataPutFieldDataService.putData(putFieldDataRequest, modelLookupMap , headers);
             return putFieldDataResult;
         }
         catch (Throwable e)
@@ -172,7 +172,7 @@ public class DataExchangeRouterController
 			List<Header> headers = new ArrayList<Header>();
 			headers.add(new BasicHeader("Authorization", context.getHttpHeaders().getHeaderString("Authorization")));
 			
-			PutFieldDataResult putFieldDataResult = this.metaDataputFieldDataService.putData(putFieldDataRequest, modelLookupMap, headers);
+			PutFieldDataResult putFieldDataResult = this.metaDataPutFieldDataService.putData(putFieldDataRequest, modelLookupMap, headers);
 			
 			return putFieldDataResult;
 			

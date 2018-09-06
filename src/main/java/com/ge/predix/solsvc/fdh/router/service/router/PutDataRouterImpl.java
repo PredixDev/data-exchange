@@ -41,7 +41,7 @@ import com.ge.predix.entity.putfielddata.PutFieldDataResult;
 import com.ge.predix.solsvc.ext.util.JsonMapper;
 import com.ge.predix.solsvc.fdh.handler.FDHUtil;
 import com.ge.predix.solsvc.fdh.handler.PutDataHandler;
-import com.ge.predix.solsvc.fdh.router.boot.FdhRouterApplication;
+import com.ge.predix.solsvc.fdh.router.boot.DataExchangeRouterApplication;
 import com.ge.predix.solsvc.fdh.router.validator.RouterPutDataCriteriaValidator;
 import com.ge.predix.solsvc.fdh.router.validator.RouterPutDataValidator;
 import com.ge.predix.solsvc.restclient.impl.RestClient;
@@ -87,7 +87,7 @@ public class PutDataRouterImpl
             List<Header> headers)
     {
 
-        FdhRouterApplication.printMemory();
+        DataExchangeRouterApplication.printMemory();
         this.validator.validate(request);
         PutFieldDataResult fullResult = new PutFieldDataResult();
         for (PutFieldDataCriteria criteria : request.getPutFieldDataCriteria())
