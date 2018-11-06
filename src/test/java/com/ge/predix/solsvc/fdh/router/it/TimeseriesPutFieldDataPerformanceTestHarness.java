@@ -111,7 +111,7 @@ public class TimeseriesPutFieldDataPerformanceTestHarness {
 
 		log.debug("================================");
 		String sensorName = "crank-frame-velocity";
-		String assetId = "compressor-2017";
+		String assetId = "Compressor-CMMS-Compressor-2018";
 
 		for (int i = 0; i < 1000; i++) {
 			PutFieldDataRequest request = TestData.putFieldDataRequest(assetId, sensorName, 0, 10);

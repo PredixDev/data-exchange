@@ -131,7 +131,7 @@ public class TestData {
 
 		// Asset to Query
 		AssetFilter filter = new AssetFilter();
-		filter.setUri("/asset/compressor-2017");
+		filter.setUri("/asset/Compressor-CMMS-Compressor-2018");
 
 		// Data to change
 		FieldData fieldData = new FieldData();
@@ -196,7 +196,7 @@ public class TestData {
 		FieldIdentifier assetIdFieldIdentifier = new FieldIdentifier();
 		assetIdFieldIdentifier.setId("/asset/assetId");
 		fieldIdentifierValue.setFieldIdentifier(assetIdFieldIdentifier);
-		fieldIdentifierValue.setValue("/asset/compressor-2017");
+		fieldIdentifierValue.setValue("/asset/Compressor-CMMS-Compressor-2018");
 		filter.getFieldIdentifierValue().add(fieldIdentifierValue);
 
 		// Data to change
@@ -230,7 +230,7 @@ public class TestData {
 
 		// Asset to Query
 		AssetFilter assetfilter = new AssetFilter();
-		assetfilter.setUri("/asset/compressor-2017");
+		assetfilter.setUri("/asset/Compressor-CMMS-Compressor-2018");
 
 		// Data to change
 		FieldData fieldData = new FieldData();

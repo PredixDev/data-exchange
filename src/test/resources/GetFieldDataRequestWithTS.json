@@ -14,7 +14,7 @@
 			"datapointsQuery": {
 				"start": "1d-ago",
 				"tags": [{
-					"name": "Compressor-2017:DischargePressure",
+					"name": "Compressor-CMMS-Compressor-2018:DischargePressure",
 					"limit": 0,
 					"aggregations": [],
 					"groups": []

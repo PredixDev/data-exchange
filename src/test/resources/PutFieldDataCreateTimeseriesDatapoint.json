@@ -13,7 +13,7 @@
 				"complexType": "DatapointsIngestion",
 				"messageId": "c6dba738-0307-4010-a452-742198be6b90",
 				"body": [{
-					"name": "compressor-2017:crank-frame-velocity",
+					"name": "Compressor-CMMS-Compressor-2018:crank-frame-velocity",
 					"datapoints": [
 						[1516390946427, 5.155958043974205]
 					]

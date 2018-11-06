@@ -114,7 +114,7 @@ public class TimeseriesIT {
 	
 		log.debug("================================");
 		String sensorName = "crank-frame-velocity";
-		String assetId = "compressor-2017";
+		String assetId = "Compressor-CMMS-Compressor-2018";
 	
 		PutFieldDataRequest request = TestData.putFieldDataRequest(assetId, sensorName, 0, 10);
 	

@@ -108,7 +108,7 @@ This nice thing to notice here is that Configuring this GET request ahead of tim
 (future)Seamlessly mapping these Rest semantics to SQL semantics has been done in the past but is not ported to the cloud.  This allows the traversal of any Object/Relational Graph relative to an 'id', such as an assetId.  
 
 ## GetFieldData - PredixAssetHandler - POST
-The GetFieldData API has a simple List of Criteria, shown below.  Each criteria has a FieldIdentifier and a Filter.  In this example we are retrieving the hiAlarmThreshold attribute on an Asset.AssetTag("crank-frame-dischargepressure") where /asset/assetId = "/asset/compressor-2017".  AssetTag is a map.  
+The GetFieldData API has a simple List of Criteria, shown below.  Each criteria has a FieldIdentifier and a Filter.  In this example we are retrieving the hiAlarmThreshold attribute on an Asset.AssetTag("crank-frame-dischargepressure") where /asset/assetId = "/asset/Compressor-CMMS-Compressor-2018".  AssetTag is a map.  
 
 Notice the use of the FieldIdentifier object, you'll see this a lot and the id and source is how the API handles Federated datasources.  Also note the FieldIdentifier is typed.  Identifier (CustomerIdentifier, TurbineIdentifier, AddressIdentier, etc) has polymorphic semantics so you can have a list of varying ids, very helpful in a SOA.
 
@@ -125,7 +125,7 @@ Notice the use of the FieldIdentifier object, you'll see this a lot and the id a
 		},
 		"filter": {
 			"complexType": "AssetFilter",
-			"uri": "/asset/compressor-2017"
+			"uri": "/asset/Compressor-CMMS-Compressor-2018"
 		}
 ```
 
@@ -220,7 +220,7 @@ This is a PutFieldDataCriteria setting the alertStatus attribute to false.  The 
 		},
 		"filter": {
 			"complexType": "AssetFilter",
-			"uri": "/asset/compressor-2017"
+			"uri": "/asset/Compressor-CMMS-Compressor-2018"
 		}
 	}]
 }

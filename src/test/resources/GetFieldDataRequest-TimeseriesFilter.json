@@ -15,7 +15,7 @@
 				"complexType": "TimeseriesFilter",
 				"datapointsLatestQuery": {
 					"tags": [{
-						"name": "Compressor-2017:DischargePressure"
+						"name": "Compressor-CMMS-Compressor-2018:DischargePressure"
 					}]
 				}
 			}
