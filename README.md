@@ -14,9 +14,9 @@ Data Exchange<br>
 <a href="http://predixdev.github.io/fdh-router-service/javadocs/fdh-timeseries-handler/index.html" target="_blank" >
 	<img height="50px" width="100px" src="images/javadoc.png" alt="view javadoc"></a>
 <br>
-<a href="http://predixdev.github.io/fdh-router-service" target="_blank">
+<!--<a href="http://predixdev.github.io/fdh-router-service" target="_blank">
 	<img height="50px" width="100px" src="images/pages.jpg" alt="view github pages">
-</a>
+</a>-->
 
 Data Exchange Federated Data Handler
 ==================
